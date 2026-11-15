@@ -20,9 +20,9 @@ async function runCommand(
 async function publishFirefox() {
   console.log("\n🦊 === UkrLat Firefox Extension AMO Publication ===");
 
-  const apiKey = process.env.AMO_JWT_ISSUER;
-  const apiSecret = process.env.AMO_JWT_SECRET;
-  const channel = process.env.AMO_CHANNEL || "listed";
+  const apiKey = process.env.AMO_JWT_ISSUER?.trim();
+  const apiSecret = process.env.AMO_JWT_SECRET?.trim();
+  const channel = process.env.AMO_CHANNEL?.trim() || "listed";
 
   if (!apiKey || !apiSecret) {
     console.error("\n❌ Missing AMO credentials in environment or .env!");
@@ -43,6 +43,8 @@ async function publishFirefox() {
     process.exit(1);
   }
 
+  const metadataPath = join(extDir, "amo-metadata.json");
+
   // 2. Sign and submit to Mozilla Add-ons via web-ext
   console.log(`\n[2/2] Submitting to Mozilla Add-ons (${channel} channel)...`);
   const signCmd = [
@@ -53,6 +55,8 @@ async function publishFirefox() {
     `--api-key=${apiKey}`,
     `--api-secret=${apiSecret}`,
     `--channel=${channel}`,
+    `--amo-metadata=${metadataPath}`,
+    "--approval-timeout=0",
   ];
 
   const signCode = await runCommand(signCmd);

@@ -11,3 +11,6 @@ node_modules
 *.log
 dist
 skills/
+web-ext-artifacts/
+.web-extension-id
+.amo-upload-uuid

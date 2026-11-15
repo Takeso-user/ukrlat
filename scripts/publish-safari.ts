@@ -50,6 +50,7 @@ async function publishSafari() {
     "-archivePath",
     archivePath,
     "-allowProvisioningUpdates",
+    "DEVELOPMENT_TEAM=YX94DR995G",
     "archive",
   ];
 

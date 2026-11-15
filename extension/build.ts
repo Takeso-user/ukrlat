@@ -86,41 +86,48 @@ async function buildTarget(target: BrowserTarget) {
   console.log(`  ✓ Built: ${outTargetDir}`);
   console.log(`  ✓ Packaged Store Archive: ${zipPath}`);
 
-  // For Safari, generate native Xcode project using safari-web-extension-converter
+  // For Safari, generate native Xcode project using safari-web-extension-converter if not present
   if (target === "safari") {
     const xcodeOutDir = join(distDir, "safari-xcode");
-    if (existsSync(xcodeOutDir)) {
-      rmSync(xcodeOutDir, { recursive: true, force: true });
-    }
-    mkdirSync(xcodeOutDir, { recursive: true });
+    const existingProj = join(xcodeOutDir, "UkrLat", "UkrLat.xcodeproj");
+    const forceRecreate = args.includes("--force-recreate");
 
-    console.log(
-      `  🍎 Generating Safari Xcode Project with safari-web-extension-converter...`,
-    );
-    const proc = Bun.spawn([
-      "xcrun",
-      "safari-web-extension-converter",
-      outTargetDir,
-      "--project-location",
-      xcodeOutDir,
-      "--app-name",
-      "UkrLat",
-      "--bundle-identifier",
-      "com.takeso.ukrlat",
-      "--swift",
-      "--no-open",
-      "--force",
-    ]);
+    if (!existsSync(existingProj) || forceRecreate) {
+      if (existsSync(xcodeOutDir)) {
+        rmSync(xcodeOutDir, { recursive: true, force: true });
+      }
+      mkdirSync(xcodeOutDir, { recursive: true });
 
-    const exitCode = await proc.exited;
-    if (exitCode === 0) {
       console.log(
-        `  ✓ Safari Xcode project generated at: ${xcodeOutDir}/UkrLat`,
+        `  🍎 Generating Safari Xcode Project with safari-web-extension-converter...`,
       );
+      const proc = Bun.spawn([
+        "xcrun",
+        "safari-web-extension-converter",
+        outTargetDir,
+        "--project-location",
+        xcodeOutDir,
+        "--app-name",
+        "UkrLat",
+        "--bundle-identifier",
+        "com.takeso.ukrlat",
+        "--swift",
+        "--no-open",
+        "--force",
+      ]);
+
+      const exitCode = await proc.exited;
+      if (exitCode === 0) {
+        console.log(
+          `  ✓ Safari Xcode project generated at: ${xcodeOutDir}/UkrLat`,
+        );
+      } else {
+        console.warn(
+          `  ⚠️ safari-web-extension-converter finished with code ${exitCode}`,
+        );
+      }
     } else {
-      console.warn(
-        `  ⚠️ safari-web-extension-converter finished with code ${exitCode}`,
-      );
+      console.log(`  ✓ Preserving existing Safari Xcode project at: ${existingProj}`);
     }
   }
 }

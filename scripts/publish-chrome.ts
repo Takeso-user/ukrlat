@@ -7,10 +7,12 @@ const chromeZip = join(extDir, "dist", "ukrlat-chrome.zip");
 async function runCommand(
   cmd: string[],
   cwd: string = rootDir,
+  extraEnv: Record<string, string> = {},
 ): Promise<number> {
   console.log(`  $ ${cmd.join(" ")}`);
   const proc = Bun.spawn(cmd, {
     cwd,
+    env: { ...process.env, ...extraEnv },
     stdout: "inherit",
     stderr: "inherit",
   });
@@ -20,10 +22,10 @@ async function runCommand(
 async function publishChrome() {
   console.log("\n🌐 === UkrLat Chrome Web Store Upload ===");
 
-  const extensionId = process.env.CHROME_EXTENSION_ID;
-  const clientId = process.env.CHROME_CLIENT_ID;
-  const clientSecret = process.env.CHROME_CLIENT_SECRET;
-  const refreshToken = process.env.CHROME_REFRESH_TOKEN;
+  const extensionId = process.env.CHROME_EXTENSION_ID?.trim();
+  const clientId = process.env.CHROME_CLIENT_ID?.trim();
+  const clientSecret = process.env.CHROME_CLIENT_SECRET?.trim();
+  const refreshToken = process.env.CHROME_REFRESH_TOKEN?.trim();
 
   if (!extensionId || !clientId || !clientSecret || !refreshToken) {
     console.error(
@@ -55,16 +57,16 @@ async function publishChrome() {
   const uploadCmd = [
     "bunx",
     "chrome-webstore-upload",
-    "upload",
     `--source=${chromeZip}`,
     `--extension-id=${extensionId}`,
-    `--client-id=${clientId}`,
-    `--client-secret=${clientSecret}`,
-    `--refresh-token=${refreshToken}`,
-    "--auto-publish",
   ];
 
-  const uploadCode = await runCommand(uploadCmd);
+  const uploadCode = await runCommand(uploadCmd, rootDir, {
+    CLIENT_ID: clientId,
+    CLIENT_SECRET: clientSecret,
+    REFRESH_TOKEN: refreshToken,
+    EXTENSION_ID: extensionId,
+  });
   if (uploadCode !== 0) {
     console.error(
       `❌ Chrome Web Store upload failed with exit code ${uploadCode}`,
