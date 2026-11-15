@@ -1,3 +1,13 @@
 .idea
-.node_modules
 node_modules
+.node_modules
+
+# Environment & sensitive data
+.env
+.env.*
+!.env.example
+
+# Bun & build artifacts
+*.log
+dist
+skills/
