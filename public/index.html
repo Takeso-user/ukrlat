@@ -34,10 +34,20 @@
       </a>
 
       <div class="nav-links">
+        <!-- Script Switcher (Кирилиця / Latynka) -->
+        <div class="script-switcher" role="radiogroup" aria-label="Вибір графіки сайту">
+          <button id="scriptBtnCyr" class="seg-btn active" onclick="setPageScript('cyrillic')" title="Читати сайт кирилицею">
+            <span class="indicator-dot"></span> Кирилиця
+          </button>
+          <button id="scriptBtnLat" class="seg-btn" onclick="setPageScript('latin')" title="Читати сайт латинкою">
+            <span class="indicator-dot"></span> Latynka
+          </button>
+        </div>
+
         <a href="#converter">Конвертер</a>
         <a href="#extensions">Розширення</a>
         <a href="#features">Можливості</a>
-        <a href="#alphabet">Алфавіт</a>
+        <a href="#alphabet">Абетка</a>
         <a href="#api">API</a>
         <a href="#extensions" class="btn-nav-action">
           <span>⚡</span> Встановити розширення
@@ -78,7 +88,7 @@
           <!-- Cyrillic Input Pane -->
           <div class="pane">
             <div class="pane-header">
-              <span class="pane-label label-cyr">● Оригінал (Кирилиця)</span>
+              <span class="pane-label label-cyr no-translit">● Оригінал (Кирилиця)</span>
               <div class="pane-actions">
                 <button class="icon-btn" onclick="insertSample('shevchenko')" title="Вставити зразок">Зразок</button>
                 <button class="icon-btn" onclick="clearAll()" title="Очистити">Очистити</button>
@@ -87,13 +97,13 @@
 
             <textarea 
               id="inputText" 
-              class="translit-textarea" 
+              class="translit-textarea no-translit" 
               placeholder="Введіть або вставте український текст кирилицею..."
             ></textarea>
 
             <div class="pane-footer">
               <span id="inputCounts">0 симв. • 0 слів</span>
-              <span>UA-CYR</span>
+              <span class="no-translit">UA-CYR</span>
             </div>
           </div>
 

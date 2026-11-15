@@ -316,6 +316,7 @@ const cyrillicAlphabetData = [
 ];
 
 let currentAlphabetTab = "latin";
+let currentPageScript = "cyrillic";
 
 function selectLetterWord(wordCyr) {
   const inputEl = document.getElementById("inputText");
@@ -356,17 +357,21 @@ function renderLatinAlphabet(query = "") {
           <span class="lat-idx">#${item.idx}</span>
         </div>
         <div class="lat-meta-row">
-          <span class="lat-cyr-badge">Кирилиця: ${item.cyr}</span>
+          <span class="lat-cyr-badge">Кирилиця: <span class="no-translit">${item.cyr}</span></span>
           <span class="lat-sound">${item.sound}</span>
         </div>
         <div class="lat-example">
-          Приклад: <strong>${item.wordLat}</strong> <em>(${item.wordCyr})</em>
+          Приклад: <strong>${item.wordLat}</strong> <em class="no-translit">(${item.wordCyr})</em>
         </div>
       </div>
     `;
   });
   html += `</div>`;
   container.innerHTML = html;
+
+  if (currentPageScript === "latin") {
+    applyScriptToContainer(container, "latin");
+  }
 }
 
 function renderCyrillicAlphabet(query = "") {
@@ -388,13 +393,17 @@ function renderCyrillicAlphabet(query = "") {
   filtered.forEach(item => {
     html += `
       <div class="letter-pair" onclick="selectLetterWord('${item.cyr.split(' ')[0]}')" title="Клікніть, щоб вставити літеру">
-        <span class="cyr-char">${item.cyr}</span>
+        <span class="cyr-char no-translit">${item.cyr}</span>
         <span class="lat-char">${item.lat}</span>
       </div>
     `;
   });
   html += `</div>`;
   container.innerHTML = html;
+
+  if (currentPageScript === "latin") {
+    applyScriptToContainer(container, "latin");
+  }
 }
 
 function renderCategoriesAlphabet(query = "") {
@@ -443,11 +452,11 @@ function renderCategoriesAlphabet(query = "") {
               <span class="lat-idx">#${item.idx}</span>
             </div>
             <div class="lat-meta-row">
-              <span class="lat-cyr-badge">Кирилиця: ${item.cyr}</span>
+              <span class="lat-cyr-badge">Кирилиця: <span class="no-translit">${item.cyr}</span></span>
               <span class="lat-sound">${item.sound}</span>
             </div>
             <div class="lat-example">
-              Приклад: <strong>${item.wordLat}</strong> <em>(${item.wordCyr})</em>
+              Приклад: <strong>${item.wordLat}</strong> <em class="no-translit">(${item.wordCyr})</em>
             </div>
           </div>
         `;
@@ -461,6 +470,110 @@ function renderCategoriesAlphabet(query = "") {
   } else {
     container.innerHTML = html;
   }
+
+  if (currentPageScript === "latin") {
+    applyScriptToContainer(container, "latin");
+  }
+}
+
+// ==============================================
+// Global Page Script Switcher (Кирилиця / Latynka)
+// ==============================================
+
+function isExcludedElement(el) {
+  if (!el) return false;
+  if (el.classList && (
+    el.classList.contains("no-translit") ||
+    el.classList.contains("cyr-char") ||
+    el.classList.contains("label-cyr") ||
+    el.classList.contains("api-code-snippet") ||
+    el.classList.contains("seg-btn")
+  )) {
+    return true;
+  }
+  if (
+    el.id === "inputText" || 
+    el.id === "apiTestInput" || 
+    el.id === "apiTestOutput" ||
+    el.id === "scriptBtnCyr" || 
+    el.id === "scriptBtnLat"
+  ) {
+    return true;
+  }
+  const tag = el.tagName ? el.tagName.toLowerCase() : "";
+  if (tag === "script" || tag === "style" || tag === "textarea") {
+    return true;
+  }
+  return false;
+}
+
+function shouldSkipNode(node) {
+  let parent = node.parentElement;
+  while (parent) {
+    if (isExcludedElement(parent)) {
+      return true;
+    }
+    parent = parent.parentElement;
+  }
+  return false;
+}
+
+function applyScriptToContainer(root, script) {
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue || !node.nodeValue.trim()) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      if (shouldSkipNode(node)) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      // Only process nodes with letters
+      if (!/[а-яА-ЯіІїЇєЄґҐa-zA-Z]/.test(node.nodeValue)) {
+        return NodeFilter.FILTER_REJECT;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+
+  const nodes = [];
+  while (walker.nextNode()) {
+    nodes.push(walker.currentNode);
+  }
+
+  nodes.forEach(node => {
+    if (node._origText === undefined) {
+      node._origText = node.nodeValue;
+    }
+    if (script === "latin") {
+      node.nodeValue = transliterateWithCaseLocal(node._origText);
+    } else {
+      node.nodeValue = node._origText;
+    }
+  });
+}
+
+function setPageScript(script) {
+  currentPageScript = script;
+  try {
+    localStorage.setItem("ukrlat_page_script", script);
+  } catch (e) {}
+
+  const cyrBtn = document.getElementById("scriptBtnCyr");
+  const latBtn = document.getElementById("scriptBtnLat");
+  if (cyrBtn && latBtn) {
+    cyrBtn.classList.toggle("active", script === "cyrillic");
+    latBtn.classList.toggle("active", script === "latin");
+  }
+
+  applyScriptToContainer(document.body, script);
+
+  const alphabetContainer = document.getElementById("alphabetContent");
+  if (alphabetContainer && script === "latin") {
+    applyScriptToContainer(alphabetContainer, "latin");
+  }
+
+  showToast(script === "latin" ? "Сайт перемкнено на латинку (UkrLat)!" : "Сайт перемкнено на кирилицю!");
 }
 
 function switchAlphabetTab(tab) {
@@ -521,4 +634,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize Latin alphabet tab
   switchAlphabetTab("latin");
+
+  // Restore saved script preference (if user previously selected Latin)
+  try {
+    const saved = localStorage.getItem("ukrlat_page_script");
+    if (saved === "latin") {
+      setPageScript("latin");
+    }
+  } catch (e) {}
 });
