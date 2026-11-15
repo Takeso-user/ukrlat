@@ -1,40 +1,395 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Транслітерація</title>
+  <title>UkrLat — Транслітерація українського тексту латинкою | Офіційний сайт</title>
+  <meta name="description" content="Сучасна та точна транслітерація української мови латинською графікою (UkrLat). Онлайн-конвертер та офіційні розширення для Chrome, Safari та Firefox." />
+  <link rel="icon" type="image/png" href="favicon.png" />
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" />
+  <!-- OpenGraph / Social Meta -->
+  <meta property="og:title" content="UkrLat — Українська латинка" />
+  <meta property="og:description" content="Миттєва транслітерація українського тексту латинкою онлайн та у браузері." />
+  <meta property="og:url" content="https://ukrlat.uk" />
+  <meta property="og:type" content="website" />
 
-  <!-- Optional: Add your custom styles here -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="container">
-  <h1 class="text-center">Транслітерація українського тексту</h1>
 
-  <div class="form-group">
-    <label for="inputText">Введіть текст українською мові:</label>
-    <textarea id="inputText" class="form-control" rows="5"></textarea>
+  <!-- Ambient Light Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+      <a href="#" class="nav-brand">
+        <div class="nav-logo">U</div>
+        <div class="nav-title-group">
+          <h2>UkrLat <span class="badge-tag">Open Source</span></h2>
+          <p>Українська латинка</p>
+        </div>
+      </a>
+
+      <div class="nav-links">
+        <a href="#converter">Конвертер</a>
+        <a href="#extensions">Розширення</a>
+        <a href="#features">Можливості</a>
+        <a href="#alphabet">Алфавіт</a>
+        <a href="#api">API</a>
+        <a href="#extensions" class="btn-nav-action">
+          <span>⚡</span> Встановити розширення
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero & Main Transliteration Console (The Visual Center) -->
+  <main class="container">
+    <section class="hero-section" id="converter">
+      <div class="hero-pill">
+        <span>✨</span> Офіційний реліз розширень та веб-платформи v1.0.1
+      </div>
+      <h1 class="hero-title">Транслітерація українського тексту</h1>
+      <p class="hero-sub">
+        Миттєвий переклад української кирилиці у сучасну латинку. Читайте сайти, пишіть повідомлення та переглядайте веб-сторінки у стандартизованій латинській графіці.
+      </p>
+
+      <!-- Transliteration Interactive Console -->
+      <div class="translit-console-card">
+        <div class="console-top-bar">
+          <div class="console-title-wrap">
+            <div class="status-dot"></div>
+            <span>Інтерактивний конвертер</span>
+          </div>
+
+          <div class="sample-pills">
+            <span>Швидкі зразки:</span>
+            <button class="pill-btn" onclick="insertSample('shevchenko')">📜 Т. Шевченко</button>
+            <button class="pill-btn" onclick="insertSample('franko')">📖 І. Франко</button>
+            <button class="pill-btn" onclick="insertSample('phrases')">💬 Фрази</button>
+            <button class="pill-btn" onclick="clearAll()">🧹 Очистити</button>
+          </div>
+        </div>
+
+        <div class="console-grid">
+          <!-- Cyrillic Input Pane -->
+          <div class="pane">
+            <div class="pane-header">
+              <span class="pane-label label-cyr">● Оригінал (Кирилиця)</span>
+              <div class="pane-actions">
+                <button class="icon-btn" onclick="insertSample('shevchenko')" title="Вставити зразок">Зразок</button>
+                <button class="icon-btn" onclick="clearAll()" title="Очистити">Очистити</button>
+              </div>
+            </div>
+
+            <textarea 
+              id="inputText" 
+              class="translit-textarea" 
+              placeholder="Введіть або вставте український текст кирилицею..."
+            ></textarea>
+
+            <div class="pane-footer">
+              <span id="inputCounts">0 симв. • 0 слів</span>
+              <span>UA-CYR</span>
+            </div>
+          </div>
+
+          <!-- Middle Action Button -->
+          <div class="console-divider">
+            <button id="transliterateButton" class="btn-convert-center" onclick="transliterateText()" title="Транслітерувати">
+              <svg viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+            </button>
+          </div>
+
+          <!-- Latin Output Pane -->
+          <div class="pane">
+            <div class="pane-header">
+              <span class="pane-label label-lat">● Результат (Latynka)</span>
+              <div class="pane-actions">
+                <button class="icon-btn primary" onclick="copyOutput()" title="Скопіювати результат">
+                  <span>📋</span> Копіювати
+                </button>
+                <button class="icon-btn" onclick="downloadResult()" title="Завантажити у файл">
+                  <span>💾</span> .txt
+                </button>
+              </div>
+            </div>
+
+            <textarea 
+              id="outputText" 
+              class="translit-textarea" 
+              readonly 
+              placeholder="Тут автоматично з'явиться результат латинкою..."
+            ></textarea>
+
+            <div class="pane-footer">
+              <span id="outputCounts">0 симв. • 0 слів</span>
+              <span>UA-LAT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Console Features Strip -->
+        <div class="console-bottom-info">
+          <div>💡 <strong>Підказка:</strong> текст транслітерується миттєво під час введення або натисканням <code>Ctrl + Enter</code></div>
+          <div class="bottom-badges">
+            <span class="bottom-badge-item">⚡ 0 мс затримки</span>
+            <span class="bottom-badge-item">🔒 100% конфіденційно</span>
+            <span class="bottom-badge-item">🌐 Працює офлайн</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Browser Extensions Section -->
+    <section class="extensions-section" id="extensions">
+      <div class="section-head">
+        <h2>Офіційні розширення для браузерів</h2>
+        <p>Читайте сайти, соцмережі та новини латинкою. Виділяйте будь-який текст або використовуйте комбінацію <strong>Alt + U</strong>.</p>
+      </div>
+
+      <div class="extensions-grid">
+        <!-- Safari Card -->
+        <div class="ext-card">
+          <div class="ext-icon-wrap" style="color: #38BDF8;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.41-12.41l-2.83 6.36-6.36 2.83 2.83-6.36 6.36-2.83zm-3.66 4.36c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49-.41-.41-1.08-.41-1.49 0-.41.41-.41 1.08 0 1.49z"/></svg>
+          </div>
+          <div class="ext-status-badge status-in-review">⏳ На перевірці в App Store</div>
+          <h3 class="ext-title">Apple Safari</h3>
+          <p class="ext-desc">Рідне розширення для macOS (Mac App Store) та iOS. Повна підтримка Safari на комп'ютерах Apple Silicon та Intel.</p>
+          <ul class="ext-meta-list">
+            <li>✓ macOS 12+ & iOS 18+</li>
+            <li>✓ Швидкі клавіші (Alt+U)</li>
+            <li>✓ Повна конфіденційність</li>
+          </ul>
+          <a class="btn-ext" href="https://appstoreconnect.apple.com/apps/6835107571/distribution" target="_blank" rel="noopener">
+            Очікується в Mac App Store
+          </a>
+        </div>
+
+        <!-- Chrome Card -->
+        <div class="ext-card">
+          <div class="ext-icon-wrap" style="color: #FACC15;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3.6c2.4 0 4.49 1.34 5.56 3.32h-7.61L8.53 6.1C9.6 5.78 10.77 5.6 12 5.6zm-6.17 3.3l3.22 5.58H5.61C4.6 13.06 4 11.11 4 9c0-.03.01-.07.01-.1h1.82zm3.79 6.57l3.81 6.6c-1.12.22-2.26.33-3.43.33-3.08 0-5.83-1.47-7.59-3.75l3.21-3.18h4zm2.38.93c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm6.38-1.5l-3.2-5.55h4.29c.34.82.52 1.72.52 2.65 0 2.5-1.03 4.76-2.7 6.38l1.09-3.48z"/></svg>
+          </div>
+          <div class="ext-status-badge status-in-review">⏳ На перевірці в Chrome Store</div>
+          <h3 class="ext-title">Google Chrome</h3>
+          <p class="ext-desc">Офіційне розширення для Chrome, Microsoft Edge, Brave, Opera та інших браузерів на базі Chromium.</p>
+          <ul class="ext-meta-list">
+            <li>✓ Manifest V3</li>
+            <li>✓ Контекстне меню (правий клік)</li>
+            <li>✓ Вспливаюче вікно швидкого введення</li>
+          </ul>
+          <a class="btn-ext" href="https://chromewebstore.google.com/detail/mpncjfkmmgefoobkjghnnnbocdmhhbig" target="_blank" rel="noopener">
+            Очікується в Web Store
+          </a>
+        </div>
+
+        <!-- Firefox Card -->
+        <div class="ext-card">
+          <div class="ext-icon-wrap" style="color: #FB923C;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.92 7.78c-.28-.06-.57-.08-.87-.08-1.63 0-3.07.82-3.93 2.07-.44-.22-.93-.35-1.46-.35-.86 0-1.63.35-2.18.92-.3-.21-.66-.34-1.06-.34-1.02 0-1.85.83-1.85 1.85 0 .2.03.39.09.57C6.67 14.86 6 15.86 6 17c0 2.21 1.79 4 4 4 1.13 0 2.15-.47 2.88-1.22.44.14.9.22 1.39.22 2.76 0 5-2.24 5-5 0-1.99-1.16-3.71-2.85-4.51.34-.23.6-.56.76-.95.34.13.72.2.14.24z"/></svg>
+          </div>
+          <div class="ext-status-badge status-in-review">⏳ На модерації в AMO</div>
+          <h3 class="ext-title">Mozilla Firefox</h3>
+          <p class="ext-desc">Повна підтримка для Firefox Desktop та Firefox для Android з відкритим вихідним кодом та підписом Mozilla.</p>
+          <ul class="ext-meta-list">
+            <li>✓ Firefox Desktop & Mobile</li>
+            <li>✓ Сувора політика конфіденційності</li>
+            <li>✓ 100% офлайн-обробка</li>
+          </ul>
+          <a class="btn-ext" href="https://addons.mozilla.org/en-US/firefox/addon/ukrlat-ukrainian-latin-script/" target="_blank" rel="noopener">
+            Очікується на AMO
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section (Matching Screenshot 2 Style) -->
+    <section class="features-section" id="features">
+      <div class="section-head">
+        <h2>Переваги проекту UkrLat</h2>
+        <p>Створено для зручного читання, збереження звукового ладу та комфортної інтеграції в щоденну роботу.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon-circle">⚡</div>
+          <div class="feature-info">
+            <h4>Миттєва швидкість</h4>
+            <p>Усі перетворення виконуються миттєво в браузері без необхідності очікування відповіді сервера.</p>
+          </div>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">🔒</div>
+          <div class="feature-info">
+            <h4>100% Конфіденційність</h4>
+            <p>Ваші дані та введений текст ніколи не залишають пристрій і не передаються стороннім аналітикам чи серверам.</p>
+          </div>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">✨</div>
+          <div class="feature-info">
+            <h4>Сучасна орфографія</h4>
+            <p>Підтримка стандартних діакритичних літер (č, š, ž, ľ, ń, ď, ť) для точної та безпомилкової передачі вимови.</p>
+          </div>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">⌨️</div>
+          <div class="feature-info">
+            <h4>Гарячі клавіші (Alt + U)</h4>
+            <p>Виділіть будь-який абзац або коментар на сайті та натисніть комбінацію клавіш для миттєвої транслітерації.</p>
+          </div>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">🖱️</div>
+          <div class="feature-info">
+            <h4>Контекстне меню</h4>
+            <p>Зручний пункт у меню правої кнопки миші браузера дозволяє читати великі статті в латинській графіці.</p>
+          </div>
+        </div>
+
+        <div class="feature-box">
+          <div class="feature-icon-circle">🚀</div>
+          <div class="feature-info">
+            <h4>Відкритий REST API</h4>
+            <p>Простий та швидкий бекенд-ендпоінт для розробників ботів, мобільних додатків та сторонніх інтеграцій.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alphabet Rules Table -->
+    <section class="rules-section" id="alphabet">
+      <div class="section-head">
+        <h2>Таблиця відповідності літер</h2>
+        <p>Стандартизована передача українських звуків літерами латинської абетки з діакритичними знаками.</p>
+      </div>
+
+      <div class="alphabet-card">
+        <h4 style="font-size: 18px; margin-bottom: 8px;">Основні літери та сполучення</h4>
+        <div class="alphabet-grid">
+          <div class="letter-pair"><span class="cyr-char">А а</span><span class="lat-char">A a</span></div>
+          <div class="letter-pair"><span class="cyr-char">Б б</span><span class="lat-char">B b</span></div>
+          <div class="letter-pair"><span class="cyr-char">В в</span><span class="lat-char">V v</span></div>
+          <div class="letter-pair"><span class="cyr-char">Г г</span><span class="lat-char">G g</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ґ ґ</span><span class="lat-char">Ĝ ĝ</span></div>
+          <div class="letter-pair"><span class="cyr-char">Д д</span><span class="lat-char">D d</span></div>
+          <div class="letter-pair"><span class="cyr-char">Дь дь</span><span class="lat-char">Ď ď</span></div>
+          <div class="letter-pair"><span class="cyr-char">Е е</span><span class="lat-char">E e</span></div>
+          <div class="letter-pair"><span class="cyr-char">Є є</span><span class="lat-char">Ê ê</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ж ж</span><span class="lat-char">Ž ž</span></div>
+          <div class="letter-pair"><span class="cyr-char">З з</span><span class="lat-char">Z z</span></div>
+          <div class="letter-pair"><span class="cyr-char">Зь зь</span><span class="lat-char">Ź ź</span></div>
+          <div class="letter-pair"><span class="cyr-char">И и</span><span class="lat-char">Y y</span></div>
+          <div class="letter-pair"><span class="cyr-char">І і</span><span class="lat-char">I i</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ї ї</span><span class="lat-char">Î î</span></div>
+          <div class="letter-pair"><span class="cyr-char">Й й</span><span class="lat-char">J j</span></div>
+          <div class="letter-pair"><span class="cyr-char">К к</span><span class="lat-char">K k</span></div>
+          <div class="letter-pair"><span class="cyr-char">Л л</span><span class="lat-char">L l</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ль ль</span><span class="lat-char">Ĺ ĺ</span></div>
+          <div class="letter-pair"><span class="cyr-char">М м</span><span class="lat-char">M m</span></div>
+          <div class="letter-pair"><span class="cyr-char">Н н</span><span class="lat-char">N n</span></div>
+          <div class="letter-pair"><span class="cyr-char">Нь нь</span><span class="lat-char">Ń ń</span></div>
+          <div class="letter-pair"><span class="cyr-char">О о</span><span class="lat-char">O o</span></div>
+          <div class="letter-pair"><span class="cyr-char">П п</span><span class="lat-char">P p</span></div>
+          <div class="letter-pair"><span class="cyr-char">Р р</span><span class="lat-char">R r</span></div>
+          <div class="letter-pair"><span class="cyr-char">С с</span><span class="lat-char">S s</span></div>
+          <div class="letter-pair"><span class="cyr-char">Сь сь</span><span class="lat-char">Ś ś</span></div>
+          <div class="letter-pair"><span class="cyr-char">Т т</span><span class="lat-char">T t</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ть ть</span><span class="lat-char">Ť ť</span></div>
+          <div class="letter-pair"><span class="cyr-char">У у</span><span class="lat-char">U u</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ф ф</span><span class="lat-char">F f</span></div>
+          <div class="letter-pair"><span class="cyr-char">Х х</span><span class="lat-char">H h</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ц ц</span><span class="lat-char">C c</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ць ць</span><span class="lat-char">Ć ć</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ч ч</span><span class="lat-char">Č č</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ш ш</span><span class="lat-char">Š š</span></div>
+          <div class="letter-pair"><span class="cyr-char">Щ щ</span><span class="lat-char">Šč šč</span></div>
+          <div class="letter-pair"><span class="cyr-char">Ю ю</span><span class="lat-char">Û û</span></div>
+          <div class="letter-pair"><span class="cyr-char">Я я</span><span class="lat-char">Â â</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Developer API Section -->
+    <section class="api-section" id="api">
+      <div class="section-head">
+        <h2>REST API для розробників</h2>
+        <p>Використовуйте публічний API UkrLat для автоматичної транслітерації у своїх проектах.</p>
+      </div>
+
+      <div class="api-card">
+        <div>
+          <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">Ендпоінт: POST /api/v1/transliterate</h3>
+          <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+            Надішліть JSON із полем <code>inputText</code>, отримайте результат у полі <code>outputText</code>.
+          </p>
+          <div class="api-code-snippet">
+curl -X POST https://ukrlat.uk/api/v1/transliterate \
+  -H "Content-Type: application/json" \
+  -d '{"inputText": "Привіт, світе!"}'
+
+# Відповідь (200 OK):
+# {"outputText": "Pryvit, svite!"}
+          </div>
+        </div>
+
+        <div>
+          <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">Спробувати в реальному часі</h3>
+          <input 
+            type="text" 
+            id="apiTestInput" 
+            value="Київ — столиця України" 
+            style="width: 100%; background: #030712; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 12px 14px; color: #fff; font-size: 14px; margin-bottom: 12px;"
+          />
+          <button class="icon-btn primary" onclick="testLiveApi()" style="padding: 10px 18px; margin-bottom: 12px;">
+            <span>⚡</span> Надіслати API запит
+          </button>
+          <pre id="apiTestOutput" class="api-code-snippet" style="height: 120px; overflow-y: auto;">Очікування виклику API...</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="nav-logo" style="width: 36px; height: 36px; font-size: 18px;">U</div>
+          <div>
+            <div style="font-weight: 800; font-size: 16px; color: #fff;">UkrLat Project</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Відкрита українська латинка</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 24px; align-items: center;">
+          <a href="https://github.com/Takeso-user/ukrlat" target="_blank" rel="noopener" style="color: var(--text-secondary); text-decoration: none;">GitHub Репозиторій</a>
+          <a href="#extensions" style="color: var(--text-secondary); text-decoration: none;">Розширення</a>
+          <a href="#api" style="color: var(--text-secondary); text-decoration: none;">API</a>
+        </div>
+      </div>
+
+      <div class="footer-copy">
+        © 2026 Serhii Maltsev. Проект розповсюджується під ліцензією Apache 2.0. Розгорнуто на Railway.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <span>✓</span>
+    <span class="toast-msg">Скопійовано в буфер обміну!</span>
   </div>
 
-  <button id="transliterateButton" class="btn btn-primary" onclick="transliterateText()">Конвертувати</button>
-
-
-  <div class="form-group">
-    <label for="outputText">Результат транслітерації:</label>
-    <textarea id="outputText" class="form-control" rows="5" readonly></textarea>
-  </div>
-</div>
-
-<!-- Bootstrap JS (optional) -->
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-<!-- Your JavaScript file -->
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

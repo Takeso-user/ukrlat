@@ -127,7 +127,9 @@ async function buildTarget(target: BrowserTarget) {
         );
       }
     } else {
-      console.log(`  ✓ Preserving existing Safari Xcode project at: ${existingProj}`);
+      console.log(
+        `  ✓ Preserving existing Safari Xcode project at: ${existingProj}`,
+      );
     }
   }
 }

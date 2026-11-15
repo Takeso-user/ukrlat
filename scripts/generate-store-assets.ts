@@ -1,30 +1,44 @@
+import { existsSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { writeFileSync, unlinkSync, existsSync } from "node:fs";
 
-const CHROME_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const CHROME_PATH =
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const rootDir = join(import.meta.dir, "..");
 const assetsDir = join(rootDir, "extension", "store-assets");
 const iconsDir = join(rootDir, "extension", "src", "icons");
 
-async function renderHtml(htmlContent: string, width: number, height: number, outputPath: string) {
-  const tmpFile = join(rootDir, `tmp-render-${Date.now()}-${Math.random().toString(36).slice(2)}.html`);
+async function renderHtml(
+  htmlContent: string,
+  width: number,
+  height: number,
+  outputPath: string,
+) {
+  const tmpFile = join(
+    rootDir,
+    `tmp-render-${Date.now()}-${Math.random().toString(36).slice(2)}.html`,
+  );
   writeFileSync(tmpFile, htmlContent);
 
-  const proc = Bun.spawn([
-    CHROME_PATH,
-    "--headless",
-    `--screenshot=${outputPath}`,
-    `--window-size=${width},${height}`,
-    "--hide-scrollbars",
-    "--default-background-color=00000000",
-    tmpFile,
-  ], {
-    stdout: "ignore",
-    stderr: "ignore",
-  });
+  const proc = Bun.spawn(
+    [
+      CHROME_PATH,
+      "--headless",
+      `--screenshot=${outputPath}`,
+      `--window-size=${width},${height}`,
+      "--hide-scrollbars",
+      "--default-background-color=00000000",
+      tmpFile,
+    ],
+    {
+      stdout: "ignore",
+      stderr: "ignore",
+    },
+  );
 
   await proc.exited;
-  try { unlinkSync(tmpFile); } catch {}
+  try {
+    unlinkSync(tmpFile);
+  } catch {}
 }
 
 // 1. Icon HTML (scalable SVG)
@@ -889,50 +903,146 @@ async function main() {
   // 1. Icons for extension (16, 32, 48, 128)
   for (const size of [16, 32, 48, 128]) {
     console.log(`  Rendering icon${size}.png...`);
-    await renderHtml(getIconHtml(size), size, size, join(iconsDir, `icon${size}.png`));
+    await renderHtml(
+      getIconHtml(size),
+      size,
+      size,
+      join(iconsDir, `icon${size}.png`),
+    );
     // Also save 128 into store-assets
     if (size === 128) {
-      await renderHtml(getIconHtml(128), 128, 128, join(assetsDir, `store-icon-128x128.png`));
+      await renderHtml(
+        getIconHtml(128),
+        128,
+        128,
+        join(assetsDir, `store-icon-128x128.png`),
+      );
     }
   }
 
   // 2. Screenshot 1 (1280x800)
   console.log("  Rendering screenshot1-translit-demo-1280x800.png...");
-  await renderHtml(getScreenshot1Html(), 1280, 800, join(assetsDir, "screenshot1-translit-demo-1280x800.png"));
+  await renderHtml(
+    getScreenshot1Html(),
+    1280,
+    800,
+    join(assetsDir, "screenshot1-translit-demo-1280x800.png"),
+  );
 
   // 3. Screenshot 2 (1280x800)
   console.log("  Rendering screenshot2-features-1280x800.png...");
-  await renderHtml(getScreenshot2Html(), 1280, 800, join(assetsDir, "screenshot2-features-1280x800.png"));
+  await renderHtml(
+    getScreenshot2Html(),
+    1280,
+    800,
+    join(assetsDir, "screenshot2-features-1280x800.png"),
+  );
 
   // 4. Promo Small Tile (440x280)
   console.log("  Rendering promo-small-tile-440x280.png...");
-  await renderHtml(getPromoSmallHtml(), 440, 280, join(assetsDir, "promo-small-tile-440x280.png"));
+  await renderHtml(
+    getPromoSmallHtml(),
+    440,
+    280,
+    join(assetsDir, "promo-small-tile-440x280.png"),
+  );
 
   // 5. Promo Marquee Tile (1400x560)
   console.log("  Rendering promo-marquee-1400x560.png...");
-  await renderHtml(getPromoMarqueeHtml(), 1400, 560, join(assetsDir, "promo-marquee-1400x560.png"));
+  await renderHtml(
+    getPromoMarqueeHtml(),
+    1400,
+    560,
+    join(assetsDir, "promo-marquee-1400x560.png"),
+  );
 
   // 6. Apple App Store / Mac App Store icons
-  const appIconDir = join(rootDir, "extension", "dist", "safari-xcode", "UkrLat", "Shared (App)", "Assets.xcassets", "AppIcon.appiconset");
+  const appIconDir = join(
+    rootDir,
+    "extension",
+    "dist",
+    "safari-xcode",
+    "UkrLat",
+    "Shared (App)",
+    "Assets.xcassets",
+    "AppIcon.appiconset",
+  );
   if (existsSync(appIconDir)) {
     console.log("  Rendering Apple AppIcon assets...");
-    await renderHtml(getIconHtml(1024), 1024, 1024, join(appIconDir, "universal-icon-1024@1x.png"));
-    await renderHtml(getIconHtml(1024), 1024, 1024, join(appIconDir, "mac-icon-512@2x.png"));
-    await renderHtml(getIconHtml(512), 512, 512, join(appIconDir, "mac-icon-512@1x.png"));
-    await renderHtml(getIconHtml(512), 512, 512, join(appIconDir, "mac-icon-256@2x.png"));
-    await renderHtml(getIconHtml(256), 256, 256, join(appIconDir, "mac-icon-256@1x.png"));
-    await renderHtml(getIconHtml(256), 256, 256, join(appIconDir, "mac-icon-128@2x.png"));
-    await renderHtml(getIconHtml(128), 128, 128, join(appIconDir, "mac-icon-128@1x.png"));
-    await renderHtml(getIconHtml(64), 64, 64, join(appIconDir, "mac-icon-32@2x.png"));
-    await renderHtml(getIconHtml(32), 32, 32, join(appIconDir, "mac-icon-32@1x.png"));
-    await renderHtml(getIconHtml(32), 32, 32, join(appIconDir, "mac-icon-16@2x.png"));
-    await renderHtml(getIconHtml(16), 16, 16, join(appIconDir, "mac-icon-16@1x.png"));
+    await renderHtml(
+      getIconHtml(1024),
+      1024,
+      1024,
+      join(appIconDir, "universal-icon-1024@1x.png"),
+    );
+    await renderHtml(
+      getIconHtml(1024),
+      1024,
+      1024,
+      join(appIconDir, "mac-icon-512@2x.png"),
+    );
+    await renderHtml(
+      getIconHtml(512),
+      512,
+      512,
+      join(appIconDir, "mac-icon-512@1x.png"),
+    );
+    await renderHtml(
+      getIconHtml(512),
+      512,
+      512,
+      join(appIconDir, "mac-icon-256@2x.png"),
+    );
+    await renderHtml(
+      getIconHtml(256),
+      256,
+      256,
+      join(appIconDir, "mac-icon-256@1x.png"),
+    );
+    await renderHtml(
+      getIconHtml(256),
+      256,
+      256,
+      join(appIconDir, "mac-icon-128@2x.png"),
+    );
+    await renderHtml(
+      getIconHtml(128),
+      128,
+      128,
+      join(appIconDir, "mac-icon-128@1x.png"),
+    );
+    await renderHtml(
+      getIconHtml(64),
+      64,
+      64,
+      join(appIconDir, "mac-icon-32@2x.png"),
+    );
+    await renderHtml(
+      getIconHtml(32),
+      32,
+      32,
+      join(appIconDir, "mac-icon-32@1x.png"),
+    );
+    await renderHtml(
+      getIconHtml(32),
+      32,
+      32,
+      join(appIconDir, "mac-icon-16@2x.png"),
+    );
+    await renderHtml(
+      getIconHtml(16),
+      16,
+      16,
+      join(appIconDir, "mac-icon-16@1x.png"),
+    );
   }
 
-  console.log("\n✅ All store assets generated successfully in extension/store-assets/!");
+  console.log(
+    "\n✅ All store assets generated successfully in extension/store-assets/!",
+  );
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error("Error generating assets:", err);
   process.exit(1);
 });
