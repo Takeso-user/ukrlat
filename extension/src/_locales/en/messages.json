@@ -1,0 +1,10 @@
+{
+  "extensionName": {
+    "message": "UkrLat - Ukrainian Latin Script",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "Automatic and interactive transliteration of Ukrainian Cyrillic text into Latin script (UkrLat) on web pages and in text inputs.",
+    "description": "Extension description"
+  }
+}

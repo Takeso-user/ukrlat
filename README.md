@@ -70,6 +70,7 @@
   - [`transliterate.test.ts`](file:///Users/sergiuszmalcew/projects/ukrlat/tests/transliterate.test.ts) — модульні тести для алгоритму транслітерації
   - [`api.test.ts`](file:///Users/sergiuszmalcew/projects/ukrlat/tests/api.test.ts) — інтеграційні тести API та статичних файлів
 - `public/` — статичні файли фронтенду (`index.html`, `styles.css`, `script.js`)
+- `extension/` — кросбраузерне розширення для **Firefox**, **Chrome** та **Safari** (авто-транслітерація сторінок та введення тексту, див. [`extension/README.md`](file:///Users/sergiuszmalcew/projects/ukrlat/extension/README.md))
 - `.env.example` — зразок змінних середовища
 - `tsconfig.json` — конфігурація компілятора TypeScript для Bun
 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UkrLat - Українська латинка</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="header">
+      <div class="logo-wrapper">
+        <div class="logo-badge">UA</div>
+        <div class="title-group">
+          <h1>UkrLat</h1>
+          <p class="subtitle">Українська латинка</p>
+        </div>
+      </div>
+      <div id="statusBadge" class="status-badge active">Увімкнено</div>
+    </header>
+
+    <section class="settings-card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Авто-транслітерація сторінок</span>
+          <span class="setting-desc">Конвертує текст на відвідуваних сторінках</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggleAutoPage" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <span class="setting-title">Транслітерація при введенні</span>
+          <span class="setting-desc">Автоматично замінює текст у полях вводу</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggleLiveInput">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="converter-card">
+      <div class="section-label">Швидкий перекладач</div>
+      
+      <div class="input-group">
+        <textarea id="popupInput" placeholder="Введіть текст кирилицею..." rows="3"></textarea>
+      </div>
+
+      <div class="output-group">
+        <textarea id="popupOutput" placeholder="Результат латинкою..." rows="3" readonly></textarea>
+        <button id="copyBtn" class="copy-btn" title="Скопіювати в буфер">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="copyLabel">Копіювати</span>
+        </button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span class="hotkey-tip">Підказка: <code>Alt+U</code> конвертує виділений фрагмент</span>
+      <a href="https://web-production-a554818f.up.railway.app" target="_blank" class="web-link">Веб-версія &nearr;</a>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
