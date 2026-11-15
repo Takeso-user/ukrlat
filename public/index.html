@@ -266,55 +266,42 @@
       </div>
     </section>
 
-    <!-- Alphabet Rules Table -->
+    <!-- Alphabet Rules & Latin Alphabet Section -->
     <section class="rules-section" id="alphabet">
       <div class="section-head">
-        <h2>Таблиця відповідності літер</h2>
-        <p>Стандартизована передача українських звуків літерами латинської абетки з діакритичними знаками.</p>
+        <h2>Латинська абетка UkrLat</h2>
+        <p>Сучасна стандартизована латинська абетка для української мови. Впорядкована за класичним латинським стандартом (A → Z) з урахуванням діакритичних знаків.</p>
       </div>
 
       <div class="alphabet-card">
-        <h4 style="font-size: 18px; margin-bottom: 8px;">Основні літери та сполучення</h4>
-        <div class="alphabet-grid">
-          <div class="letter-pair"><span class="cyr-char">А а</span><span class="lat-char">A a</span></div>
-          <div class="letter-pair"><span class="cyr-char">Б б</span><span class="lat-char">B b</span></div>
-          <div class="letter-pair"><span class="cyr-char">В в</span><span class="lat-char">V v</span></div>
-          <div class="letter-pair"><span class="cyr-char">Г г</span><span class="lat-char">G g</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ґ ґ</span><span class="lat-char">Ĝ ĝ</span></div>
-          <div class="letter-pair"><span class="cyr-char">Д д</span><span class="lat-char">D d</span></div>
-          <div class="letter-pair"><span class="cyr-char">Дь дь</span><span class="lat-char">Ď ď</span></div>
-          <div class="letter-pair"><span class="cyr-char">Е е</span><span class="lat-char">E e</span></div>
-          <div class="letter-pair"><span class="cyr-char">Є є</span><span class="lat-char">Ê ê</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ж ж</span><span class="lat-char">Ž ž</span></div>
-          <div class="letter-pair"><span class="cyr-char">З з</span><span class="lat-char">Z z</span></div>
-          <div class="letter-pair"><span class="cyr-char">Зь зь</span><span class="lat-char">Ź ź</span></div>
-          <div class="letter-pair"><span class="cyr-char">И и</span><span class="lat-char">Y y</span></div>
-          <div class="letter-pair"><span class="cyr-char">І і</span><span class="lat-char">I i</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ї ї</span><span class="lat-char">Î î</span></div>
-          <div class="letter-pair"><span class="cyr-char">Й й</span><span class="lat-char">J j</span></div>
-          <div class="letter-pair"><span class="cyr-char">К к</span><span class="lat-char">K k</span></div>
-          <div class="letter-pair"><span class="cyr-char">Л л</span><span class="lat-char">L l</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ль ль</span><span class="lat-char">Ĺ ĺ</span></div>
-          <div class="letter-pair"><span class="cyr-char">М м</span><span class="lat-char">M m</span></div>
-          <div class="letter-pair"><span class="cyr-char">Н н</span><span class="lat-char">N n</span></div>
-          <div class="letter-pair"><span class="cyr-char">Нь нь</span><span class="lat-char">Ń ń</span></div>
-          <div class="letter-pair"><span class="cyr-char">О о</span><span class="lat-char">O o</span></div>
-          <div class="letter-pair"><span class="cyr-char">П п</span><span class="lat-char">P p</span></div>
-          <div class="letter-pair"><span class="cyr-char">Р р</span><span class="lat-char">R r</span></div>
-          <div class="letter-pair"><span class="cyr-char">С с</span><span class="lat-char">S s</span></div>
-          <div class="letter-pair"><span class="cyr-char">Сь сь</span><span class="lat-char">Ś ś</span></div>
-          <div class="letter-pair"><span class="cyr-char">Т т</span><span class="lat-char">T t</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ть ть</span><span class="lat-char">Ť ť</span></div>
-          <div class="letter-pair"><span class="cyr-char">У у</span><span class="lat-char">U u</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ф ф</span><span class="lat-char">F f</span></div>
-          <div class="letter-pair"><span class="cyr-char">Х х</span><span class="lat-char">H h</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ц ц</span><span class="lat-char">C c</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ць ць</span><span class="lat-char">Ć ć</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ч ч</span><span class="lat-char">Č č</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ш ш</span><span class="lat-char">Š š</span></div>
-          <div class="letter-pair"><span class="cyr-char">Щ щ</span><span class="lat-char">Šč šč</span></div>
-          <div class="letter-pair"><span class="cyr-char">Ю ю</span><span class="lat-char">Û û</span></div>
-          <div class="letter-pair"><span class="cyr-char">Я я</span><span class="lat-char">Â â</span></div>
+        <!-- Alphabet Tabs -->
+        <div class="alphabet-tabs">
+          <button class="tab-btn active" data-tab="latin" onclick="switchAlphabetTab('latin')">
+            <span>🔤</span> Латинський порядок (A — Z)
+          </button>
+          <button class="tab-btn" data-tab="categories" onclick="switchAlphabetTab('categories')">
+            <span>🧩</span> За групами звуків
+          </button>
+          <button class="tab-btn" data-tab="cyrillic" onclick="switchAlphabetTab('cyrillic')">
+            <span>🔄</span> Порівняння з кирилицею (А — Я)
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="alphabet-search-wrap">
+          <svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input 
+            type="text" 
+            id="alphabetSearchInput" 
+            class="alphabet-search-input" 
+            placeholder="Пошук літери чи слова (наприклад: č, ч, час)..." 
+            oninput="filterAlphabet()" 
+          />
+        </div>
+
+        <!-- Dynamic Alphabet Content Container -->
+        <div id="alphabetContent">
+          <!-- Filled dynamically by script.js -->
         </div>
       </div>
     </section>

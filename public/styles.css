@@ -679,7 +679,7 @@ body {
   line-height: 1.55;
 }
 
-/* Alphabet Reference Table */
+/* Alphabet Reference & Latin Alphabet Section */
 .rules-section {
   padding: 40px 0 80px 0;
 }
@@ -690,13 +690,206 @@ body {
   backdrop-filter: blur(20px);
   border-radius: var(--radius-lg);
   padding: 32px;
+  box-shadow: var(--shadow-card);
 }
 
+/* Alphabet Tabs */
+.alphabet-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(0, 87, 183, 0.4), rgba(2, 132, 199, 0.3));
+  border-color: var(--ua-blue-light);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(56, 189, 248, 0.25);
+}
+
+/* Alphabet Search Bar */
+.alphabet-search-wrap {
+  max-width: 420px;
+  margin: 0 auto 28px auto;
+  position: relative;
+}
+
+.alphabet-search-input {
+  width: 100%;
+  background: rgba(11, 17, 32, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 11px 16px 11px 42px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.alphabet-search-input:focus {
+  border-color: var(--ua-blue-light);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+}
+
+.search-icon-svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  fill: var(--text-muted);
+}
+
+/* Latin Order Grid */
+.lat-alphabet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.lat-card {
+  background: rgba(11, 17, 32, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  position: relative;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.lat-card:hover {
+  background: rgba(17, 24, 39, 0.95);
+  border-color: var(--ua-gold);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(250, 204, 21, 0.2);
+}
+
+.lat-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.lat-letter {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ua-gold);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.lat-idx {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.lat-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.lat-cyr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ua-blue-light);
+}
+
+.lat-sound {
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  color: #CBD5E1;
+}
+
+.lat-example {
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 8px;
+  margin-top: auto;
+  line-height: 1.4;
+}
+
+.lat-example strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.lat-example em {
+  font-style: normal;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+/* Category Sections */
+.category-group {
+  margin-bottom: 32px;
+}
+
+.category-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #E2E8F0;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-title .count {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Cyrillic Comparison Grid */
 .alphabet-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 16px;
 }
 
 .letter-pair {
@@ -708,6 +901,7 @@ body {
   align-items: center;
   justify-content: space-between;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .letter-pair:hover {
