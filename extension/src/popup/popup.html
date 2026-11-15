@@ -25,8 +25,8 @@
           <span class="setting-title">Авто-транслітерація сторінок</span>
           <span class="setting-desc">Конвертує текст на відвідуваних сторінках</span>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="toggleAutoPage" checked>
+        <label class="switch" for="toggleAutoPage" aria-label="Авто-транслітерація сторінок">
+          <input type="checkbox" id="toggleAutoPage" checked aria-label="Авто-транслітерація сторінок">
           <span class="slider"></span>
         </label>
       </div>
@@ -36,8 +36,8 @@
           <span class="setting-title">Транслітерація при введенні</span>
           <span class="setting-desc">Автоматично замінює текст у полях вводу</span>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="toggleLiveInput">
+        <label class="switch" for="toggleLiveInput" aria-label="Транслітерація при введенні">
+          <input type="checkbox" id="toggleLiveInput" aria-label="Транслітерація при введенні">
           <span class="slider"></span>
         </label>
       </div>
@@ -52,8 +52,9 @@
 
       <div class="output-group">
         <textarea id="popupOutput" placeholder="Результат латинкою..." rows="3" readonly></textarea>
-        <button id="copyBtn" class="copy-btn" title="Скопіювати в буфер">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button type="button" id="copyBtn" class="copy-btn" title="Скопіювати в буфер">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" role="img" aria-label="Іконка копіювання">
+            <title>Іконка копіювання</title>
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>

@@ -1,9 +1,11 @@
-import { transliterateWithCase, transliterate } from "../transliterate";
+import { transliterateWithCase } from "../transliterate";
 import { containsUkrainianCyrillic } from "./dom-transliterate";
 
 let isInputTransliterationActive = false;
 
-function isEligibleInput(target: EventTarget | null): target is HTMLInputElement | HTMLTextAreaElement {
+function isEligibleInput(
+  target: EventTarget | null,
+): target is HTMLInputElement | HTMLTextAreaElement {
   if (!target) return false;
 
   if (target instanceof HTMLTextAreaElement) {
@@ -13,7 +15,16 @@ function isEligibleInput(target: EventTarget | null): target is HTMLInputElement
   if (target instanceof HTMLInputElement) {
     if (target.readOnly || target.disabled) return false;
     const type = target.type.toLowerCase();
-    const ineligibleTypes = new Set(["password", "email", "number", "date", "time", "file", "color", "range"]);
+    const ineligibleTypes = new Set([
+      "password",
+      "email",
+      "number",
+      "date",
+      "time",
+      "file",
+      "color",
+      "range",
+    ]);
     return !ineligibleTypes.has(type);
   }
 
@@ -86,7 +97,13 @@ export function transliterateCurrentSelection(): void {
 
 function handleKeyDown(event: KeyboardEvent): void {
   // Alt+U shortcut to transliterate selection or current input field
-  if (event.altKey && (event.key === "u" || event.key === "U" || event.key === "г" || event.key === "Г")) {
+  if (
+    event.altKey &&
+    (event.key === "u" ||
+      event.key === "U" ||
+      event.key === "г" ||
+      event.key === "Г")
+  ) {
     event.preventDefault();
     transliterateCurrentSelection();
   }

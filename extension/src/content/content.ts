@@ -1,7 +1,10 @@
-import { enablePageTransliteration, disablePageTransliteration } from "./dom-transliterate";
 import {
-  enableInputTransliteration,
+  disablePageTransliteration,
+  enablePageTransliteration,
+} from "./dom-transliterate";
+import {
   disableInputTransliteration,
+  enableInputTransliteration,
   transliterateCurrentSelection,
 } from "./input-transliterate";
 
@@ -43,8 +46,12 @@ getStorageArea().get(DEFAULT_SETTINGS, (items) => {
 });
 
 // React to live setting changes from the popup
-if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.onChanged) {
-  chrome.storage.onChanged.addListener((changes, areaName) => {
+if (
+  typeof chrome !== "undefined" &&
+  chrome.storage &&
+  chrome.storage.onChanged
+) {
+  chrome.storage.onChanged.addListener((_changes, areaName) => {
     if (areaName === "sync" || areaName === "local") {
       getStorageArea().get(DEFAULT_SETTINGS, (items) => {
         applySettings(items as UkrLatSettings);
@@ -54,7 +61,11 @@ if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.onChanged)
 }
 
 // React to commands / context menu actions
-if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+if (
+  typeof chrome !== "undefined" &&
+  chrome.runtime &&
+  chrome.runtime.onMessage
+) {
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.action === "TRANSLITERATE_SELECTION") {
       transliterateCurrentSelection();

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { transliterate, transliterateWithCase } from "../src/transliterate";
 import { containsUkrainianCyrillic } from "../src/content/dom-transliterate";
+import { transliterate, transliterateWithCase } from "../src/transliterate";
 
 describe("Extension Transliteration Module", () => {
   test("transliterates Ukrainian Cyrillic words to UkrLat", () => {
@@ -21,13 +21,16 @@ describe("Extension Transliteration Module", () => {
 
   test("preserves formatting and whitespace in transliterateWithCase", () => {
     const text = "Привіт, світе!\nЦе тестовий рядок з   кількома   пробілами.";
-    const expected = "Pryvit, svite!\nCe testovyj râdok z   kiĺkoma   probilamy.";
+    const expected =
+      "Pryvit, svite!\nCe testovyj râdok z   kiĺkoma   probilamy.";
     expect(transliterateWithCase(text)).toBe(expected);
   });
 
   test("preserves all-uppercase tokens", () => {
     expect(transliterateWithCase("СЬОГОДНІ В КИЄВІ")).toBe("ŚOGODNI V KYÊVI");
-    expect(transliterateWithCase("УКРАЇНА ТА ЄВРОПА")).toBe("UKRAÎNA TA ÊVROPA");
+    expect(transliterateWithCase("УКРАЇНА ТА ЄВРОПА")).toBe(
+      "UKRAÎNA TA ÊVROPA",
+    );
   });
 
   test("detects Ukrainian Cyrillic correctly", () => {

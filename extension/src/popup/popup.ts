@@ -8,11 +8,19 @@ function getStorage(): chrome.storage.StorageArea {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const toggleAutoPage = document.getElementById("toggleAutoPage") as HTMLInputElement;
-  const toggleLiveInput = document.getElementById("toggleLiveInput") as HTMLInputElement;
+  const toggleAutoPage = document.getElementById(
+    "toggleAutoPage",
+  ) as HTMLInputElement;
+  const toggleLiveInput = document.getElementById(
+    "toggleLiveInput",
+  ) as HTMLInputElement;
   const statusBadge = document.getElementById("statusBadge") as HTMLElement;
-  const popupInput = document.getElementById("popupInput") as HTMLTextAreaElement;
-  const popupOutput = document.getElementById("popupOutput") as HTMLTextAreaElement;
+  const popupInput = document.getElementById(
+    "popupInput",
+  ) as HTMLTextAreaElement;
+  const popupOutput = document.getElementById(
+    "popupOutput",
+  ) as HTMLTextAreaElement;
   const copyBtn = document.getElementById("copyBtn") as HTMLButtonElement;
   const copyLabel = document.getElementById("copyLabel") as HTMLElement;
 
@@ -38,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       toggleAutoPage.checked = items.autoPageTransliterate;
       toggleLiveInput.checked = items.liveInputTransliterate;
       updateStatus(items.autoPageTransliterate);
-    }
+    },
   );
 
   // Toggle page transliteration

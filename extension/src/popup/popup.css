@@ -18,7 +18,9 @@
 
 body {
   width: 340px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
   font-size: 13px;
   color: var(--text);
   background-color: var(--bg);
@@ -85,7 +87,8 @@ body {
   color: #b91c1c;
 }
 
-.settings-card, .converter-card {
+.settings-card,
+.converter-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);

@@ -98,10 +98,11 @@ export function transliterate(text: string): string {
   let result = "";
   for (let i = 0; i < text.length; i++) {
     const currentChar = text[i];
-    const nextChar = i < text.length - 1 ? text[i + 1] : "";
+    if (currentChar === undefined) continue;
+    const nextChar = i < text.length - 1 ? (text[i + 1] ?? "") : "";
     const currentPair = currentChar + nextChar;
 
-    if (Object.prototype.hasOwnProperty.call(translitMap, currentPair)) {
+    if (Object.hasOwn(translitMap, currentPair)) {
       result += translitMap[currentPair];
       i++;
     } else {

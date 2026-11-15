@@ -40,15 +40,38 @@
 
 5. Відкрийте браузер за адресою [http://localhost:3000](http://localhost:3000)
 
-## Тестування та перевірка типів
+## Тестування, лінтинг та перевірка типів
 
-- Запуск тестів (Bun test runner):
+- **Запуск тестів (Bun test runner)**:
   ```sh
-  bun test
+  bun test           # Тести бекенду
+  bun run test:all   # Тести бекенду та розширення
   ```
-- Перевірка типів TypeScript:
+- **Перевірка типів TypeScript 7.0.2**:
   ```sh
   bun run typecheck
+  ```
+- **Лінтинг та форматування (Biome)**:
+  ```sh
+  bun run lint       # Перевірка стилю коду та правил лінтера
+  bun run lint:fix   # Автоматичне виправлення помилок
+  bun run format     # Форматування коду
+  ```
+
+## Автоматичне версіонування (SemVer) та публікація розширень
+
+- **Оновлення версії (SemVer)** в усіх маніфестах, пакетах та Xcode:
+  ```sh
+  bun run version:patch   # Бамп patch-версії (1.0.0 -> 1.0.1)
+  bun run version:minor   # Бамп minor-версії (1.0.0 -> 1.1.0)
+  bun run version:major   # Бамп major-версії (1.0.0 -> 2.0.0)
+  ```
+- **Автоматична публікація через CLI в офіційні магазини**:
+  ```sh
+  bun run publish:firefox   # Відправка в Mozilla Add-ons (AMO) через web-ext
+  bun run publish:chrome    # Відправка в Chrome Web Store API
+  bun run publish:safari    # Збірка, архівування та відправка в App Store Connect через xcodebuild
+  bun run publish:all       # Публікація в усі магазини одночасно
   ```
 
 ## Використання API

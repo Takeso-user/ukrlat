@@ -1,6 +1,6 @@
-import { describe, expect, test, beforeAll, afterAll } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import type { Server } from "node:http";
 import { app } from "../src/app";
-import type { Server } from "http";
 
 describe("API and Static HTTP Endpoints", () => {
   let server: Server;

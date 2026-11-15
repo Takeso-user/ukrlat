@@ -1,6 +1,6 @@
 {
   "name": "ukrlat-extension",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cross-browser extension for UkrLat transliteration (Firefox, Chrome, Safari)",
   "type": "module",
   "scripts": {
@@ -9,11 +9,13 @@
     "build:chrome": "bun run build.ts --target=chrome",
     "build:safari": "bun run build.ts --target=safari",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write ."
   },
   "devDependencies": {
+    "@types/bun": "^1.4.4",
     "@types/chrome": "^0.0.280",
-    "bun-types": "^1.1.42",
-    "typescript": "^5.7.2"
+    "typescript": "7.0.2"
   }
 }

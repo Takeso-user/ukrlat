@@ -1,5 +1,9 @@
-import express, { type Application, type Request, type Response } from "express";
-import { join } from "path";
+import { join } from "node:path";
+import express, {
+  type Application,
+  type Request,
+  type Response,
+} from "express";
 import { transliterateWithCase } from "./transliterate";
 
 export function createApp(): Application {
@@ -12,7 +16,9 @@ export function createApp(): Application {
     const { inputText } = req.body || {};
 
     if (inputText === undefined || inputText === null) {
-      return res.status(400).json({ error: "Missing inputText in the request body" });
+      return res
+        .status(400)
+        .json({ error: "Missing inputText in the request body" });
     }
 
     if (typeof inputText !== "string") {

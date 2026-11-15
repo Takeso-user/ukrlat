@@ -34,7 +34,10 @@ function shouldIgnoreNode(node: Node): boolean {
     return true;
   }
 
-  if (parent.getAttribute("translate") === "no" || parent.classList.contains("notranslate")) {
+  if (
+    parent.getAttribute("translate") === "no" ||
+    parent.classList.contains("notranslate")
+  ) {
     return true;
   }
 
@@ -84,7 +87,10 @@ export function restoreTextNode(node: Text): void {
 /**
  * Traverses a subtree and applies a callback to every eligible text node.
  */
-export function walkTextNodes(root: Node, callback: (node: Text) => void): void {
+export function walkTextNodes(
+  root: Node,
+  callback: (node: Text) => void,
+): void {
   if (root.nodeType === Node.TEXT_NODE) {
     callback(root as Text);
     return;

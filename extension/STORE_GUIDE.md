@@ -7,104 +7,94 @@
 
 ---
 
+## ⚡ Автоматизована публікація через CLI (Оновлено)
+
+В основному `package.json` налаштовано автоматичне версіонування за стандартом SemVer та команди для прямого завантаження в магазини через API/CLI:
+
+### 1. Автоматичне версіонування (SemVer)
+Перед публікацією використовуйте одну з команд для автоматичного оновлення версії в усіх маніфестах (Firefox, Chrome), `package.json` та Xcode-проєкті Safari:
+```sh
+bun run version:patch   # наприклад, 1.0.0 -> 1.0.1
+bun run version:minor   # наприклад, 1.0.0 -> 1.1.0
+bun run version:major   # наприклад, 1.0.0 -> 2.0.0
+```
+
+### 2. Автоматичне завантаження в один клік:
+```sh
+# Опублікувати в конкретний магазин:
+bun run publish:firefox   # Автоматична збірка, підпис та завантаження в AMO через web-ext
+bun run publish:chrome    # Автоматична збірка та завантаження в Chrome Web Store API
+bun run publish:safari    # Автоматична збірка, створення .xcarchive та відправка в App Store Connect через xcodebuild
+
+# Опублікувати відразу в усі три магазини з автоматичним бампом версії:
+bun run publish:all --bump=patch
+```
+
+---
+
 ## 1. Mozilla Add-ons (Firefox AMO)
 
-### Підготовка файлу
-- Готовий архів: `extension/dist/ukrlat-firefox.zip`
-- Маніфест містить `browser_specific_settings.gecko.id: "ukrlat@takeso.com"` та версію Manifest V3.
+### Налаштування API (для CLI `bun run publish:firefox`)
+1. Увійдіть на сторінку [Mozilla Add-on API Keys](https://addons.mozilla.org/developers/addon/api/key/).
+2. Згенеруйте новий обліковий запис API (JWT issuer та secret).
+3. Додайте ключі до свого файлу `.env`:
+   ```env
+   AMO_JWT_ISSUER=user:12345678:999
+   AMO_JWT_SECRET=your_mozilla_api_secret_key
+   AMO_CHANNEL=listed
+   ```
+4. Запустіть:
+   ```sh
+   bun run publish:firefox
+   ```
+   Команда автоматично збере розширення, згенерує `ukrlat-firefox.zip`, підпише його через офіційний `web-ext` та відправить на модерацію.
 
-### Кроки для публікації:
-1. Зареєструйтеся або увійдіть на [Mozilla Add-on Developer Hub](https://addons.mozilla.org/developers/).
-2. Натисніть кнопку **«Submit a New Add-on»** (Подати новий додаток).
-3. Оберіть варіант розповсюдження:
-   - **«On this site»** (На цьому сайті) — рекомендовано для публічного розміщення в каталозі Firefox Add-ons.
-4. Завантажте архів `extension/dist/ukrlat-firefox.zip`.
-5. Автоматичний валідатор перевірить маніфест і код (розширення повністю відповідає стандарту MV3).
-6. Якщо модератори запитають вихідний код (source code review):
-   - Оскільки код транспілюється з TypeScript за допомогою Bun, створіть архів вихідних файлів папки `extension/src` та надішліть його з інструкцією збірки:
-     ```sh
-     cd extension
-     bun install
-     bun run build:firefox
-     ```
-7. Заповніть інформацію для сторінки додатку:
-   - **Назва:** UkrLat - Українська латинка
-   - **Короткий опис:** Автоматична та інтерактивна транслітерація українського кириличного тексту в латинку.
-   - **Категорія:** Мовні інструменти / Продуктивність.
-8. Натисніть **«Submit Version»**. Модерація зазвичай займає від кількох годин до 1-2 днів.
+### Ручне завантаження (альтернатива)
+- Готовий архів: `extension/dist/ukrlat-firefox.zip`
+- На [Mozilla Add-on Developer Hub](https://addons.mozilla.org/developers/) натисніть *«Submit a New Add-on»* та завантажте zip-файл.
 
 ---
 
 ## 2. Chrome Web Store (Chrome, Edge, Brave)
 
-### Підготовка файлу
-- Готовий архів: `extension/dist/ukrlat-chrome.zip`
+### Налаштування API (для CLI `bun run publish:chrome`)
+1. Зареєструйтеся у [Chrome Web Store Developer Dashboard](https://chromewebstore.google.com/developer) (одноразова реєстрація $5 USD).
+2. Створіть Google Cloud Project та налаштуйте Chrome Web Store API згідно з [офіційною інструкцією](https://github.com/fregante/chrome-webstore-upload/blob/main/How%20to%20generate%20Google%20API%20keys.md).
+3. Додайте змінні до файлу `.env`:
+   ```env
+   CHROME_EXTENSION_ID=abcdefghijklmnopqrstuvwxyz123456
+   CHROME_CLIENT_ID=your_client_id.apps.googleusercontent.com
+   CHROME_CLIENT_SECRET=your_client_secret
+   CHROME_REFRESH_TOKEN=your_refresh_token
+   ```
+4. Запустіть:
+   ```sh
+   bun run publish:chrome
+   ```
+   Скрипт автоматично завантажить нову версію та відправить її на рев'ю з прапорцем `--auto-publish`.
 
-### Кроки для публікації:
-1. Перейдіть до [Chrome Web Store Developer Dashboard](https://chromewebstore.google.com/developer).
-2. Зареєструйте обліковий запис розробника Google (одноразова реєстраційна плата становить $5 USD).
-3. Натисніть **«Add new item»** (Додати новий елемент).
-4. Завантажте архів `extension/dist/ukrlat-chrome.zip`.
-5. Заповніть інформацію про розширення:
-   - **Детальний опис:** Опишіть можливості (авто-транслітерація сторінок, швидкий перекладач, підміна тексту при введенні, гаряча клавіша `Alt+U`).
-   - **Скріншоти:** Завантажте щонайменше 1 скріншот (1280x800 або 640x400 px), наприклад, спливаюче вікно та приклад транслітерованого тексту.
-   - **Значок:** Використовуйте `extension/src/icons/icon128.png`.
-   - **Категорія:** Tools (Інструменти) або Accessibility (Спеціальні можливості).
-6. Вкладка **Privacy (Конфіденційність)**:
-   - **Single Purpose (Єдина мета):** Автоматична та інтерактивна транслітерація українського тексту в латинку.
-   - **Обґрунтування дозволів (Permission justification):**
-     - `storage`: збереження налаштувань користувача (перемикачі авто-транслітерації та вводу).
-     - `activeTab`: доступ до поточної сторінки для застосування транслітерації тексту.
-     - `contextMenus`: створення пункту правої кнопки миші для транслітерації виділеного тексту.
-   - **Збір даних:** Позначте «Ні» — розширення не збирає та не передає жодних персональних даних (уся транслітерація відбувається локально в браузері).
-7. Натисніть **«Submit for Review»** (Подати на розгляд). Перевірка зазвичай займає 1-3 робочих дні.
+### Ручне завантаження (альтернатива)
+- Готовий архів: `extension/dist/ukrlat-chrome.zip`
+- Завантажте архів у консолі Chrome Web Store, вкажіть опис, додайте скріншот і надішліть на перевірку.
 
 ---
 
 ## 3. Apple Safari (Mac App Store & iOS App Store)
 
-Для Safari розширення упаковуються як нативні macOS / iOS додатки за допомогою Xcode.
-
-### Підготовка:
-- Проєкт Xcode вже згенеровано у папці:
-  ```
-  extension/dist/safari-xcode/UkrLat/UkrLat.xcodeproj
-  ```
-
-### Кроки для публікації:
-1. **Обліковий запис Apple Developer:**
-   - Необхідна активна підписка [Apple Developer Program](https://developer.apple.com/programs/) ($99/рік).
-2. **Відкрийте проєкт у Xcode:**
+### Налаштування CLI (для `bun run publish:safari`)
+Оскільки обліковий запис розробника Apple вже додано в Xcode на вашому Mac:
+1. Запустіть CLI-команду:
    ```sh
-   open extension/dist/safari-xcode/UkrLat/UkrLat.xcodeproj
+   bun run publish:safari
    ```
-3. **Налаштування підпису (Signing):**
-   - У панелі навігації Xcode виберіть кореневий проєкт **UkrLat**.
-   - Перейдіть на вкладку **Signing & Capabilities**.
-   - Оберіть вашу команду розробника (**Team**) для обох цілей:
-     - `UkrLat (macOS App)`
-     - `UkrLat Extension (macOS Extension)`
-   - Переконайтеся, що `Bundle Identifier` відповідає зареєстрованому у вашому Apple Developer акаунті (за замовчуванням `com.takeso.ukrlat`).
-4. **Створення запису в App Store Connect:**
-   - Перейдіть на [App Store Connect](https://appstoreconnect.apple.com/).
-   - Створіть новий додаток (New App), обравши платформу **macOS** (та iOS за бажанням).
-5. **Архівація та відправка (Archive & Upload):**
-   - У Xcode оберіть схему **UkrLat (macOS)** та пристрій **Any Mac (Apple Silicon, Intel)**.
-   - У верхньому меню оберіть **Product $\rightarrow$ Archive**.
-   - Після завершення збірки у вікні Organizer натисніть **Distribute App $\rightarrow$ App Store Connect**.
-   - Дотримуйтесь підказок для автоматичного завантаження збірки в App Store Connect.
-6. **Подання на рев'ю:**
-   - В App Store Connect додайте скріншоти, опис, посилання на політику конфіденційності та виберіть завантажену збірку.
-   - Натисніть **«Submit for Review»**. Модерація Apple займає близько 24–48 годин.
+2. Скрипт автоматично:
+   - Збирає бандл розширення Safari.
+   - Генерує нативний проєкт Xcode у `extension/dist/safari-xcode/UkrLat`.
+   - Запускає `xcodebuild archive` із параметром `-allowProvisioningUpdates` та вашим встановленим сертифікатом.
+   - Виконує `xcodebuild -exportArchive` з `scripts/exportOptions.plist` та надсилає архів напряму в App Store Connect.
 
----
-
-## 📋 Контрольний список перед відправкою (Pre-flight Checklist)
-
-- [x] Код зібрано та оптимізовано за допомогою `bun run build`.
-- [x] Модульні тести пройдено (`bun test`).
-- [x] Перевірку типів TypeScript пройдено (`bun run typecheck`).
-- [x] Іконки всіх розмірів (16x16, 48x48, 128x128) присутні в архівах.
-- [x] Локалізація налаштована (`_locales/uk` та `_locales/en`).
-- [x] Усі архіви для Firefox (`ukrlat-firefox.zip`) та Chrome (`ukrlat-chrome.zip`) сформовані.
-- [x] Xcode-проєкт для Safari сформований (`dist/safari-xcode/UkrLat`).
+### Ручне відкриття в Xcode (якщо потрібно змінити налаштування інтерфейсу)
+```sh
+open extension/dist/safari-xcode/UkrLat/UkrLat.xcodeproj
+```
+У вікні Xcode оберіть команду розробника (Team) у вкладці *Signing & Capabilities*, після чого натисніть *Product $\rightarrow$ Archive* $\rightarrow$ *Distribute App*.
