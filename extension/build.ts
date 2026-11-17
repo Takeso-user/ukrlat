@@ -135,14 +135,27 @@ async function buildTarget(target: BrowserTarget) {
 }
 
 async function main() {
-  console.log("🚀 Starting UkrLat Browser Extension Build...");
+  console.log(
+    "===============================================================",
+  );
+  console.log("🚀 СБОРКА РАСШИРЕНИЯ UKRLAT (CHROME, FIREFOX, SAFARI)...");
+  console.log(
+    "===============================================================\n",
+  );
   mkdirSync(distDir, { recursive: true });
 
   for (const target of targets) {
     await buildTarget(target);
   }
 
-  console.log("\n✨ All builds completed successfully!");
+  console.log(
+    "\n===============================================================",
+  );
+  console.log("✨ ВСЕ БАНДЛЫ И АРХИВЫ .ZIP УСПЕШНО СОБРАНЫ!");
+  console.log(`📁 Директория с готовыми сборками: ${distDir}`);
+  console.log(
+    "===============================================================",
+  );
 }
 
 main().catch((err) => {

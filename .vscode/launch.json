@@ -6,65 +6,75 @@
       "request": "launch",
       "name": "🚀 Паблиш: мелкий патч (3-я цифра: багфиксы)",
       "program": "${workspaceFolder}/scripts/publish-all.ts",
-      "args": ["patch"]
+      "args": ["patch"],
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "🚀 Паблиш: минорная версия (2-я цифра: новые функции)",
       "program": "${workspaceFolder}/scripts/publish-all.ts",
-      "args": ["minor"]
+      "args": ["minor"],
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "🚀 Паблиш: мажорная версия (1-я цифра: глобальный релиз)",
       "program": "${workspaceFolder}/scripts/publish-all.ts",
-      "args": ["major"]
+      "args": ["major"],
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "📊 Проверка статуса модерации (все 3 магазина)",
-      "program": "${workspaceFolder}/scripts/status.ts"
+      "program": "${workspaceFolder}/scripts/status.ts",
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "📦 Собрать бандлы расширения (build:extension)",
       "program": "${workspaceFolder}/extension/build.ts",
-      "cwd": "${workspaceFolder}/extension"
+      "cwd": "${workspaceFolder}/extension",
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "🧪 Запустить все тесты (UkrLat Tests)",
-      "program": "${workspaceFolder}/scripts/run-tests.ts"
+      "program": "${workspaceFolder}/scripts/run-tests.ts",
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "⚡ Локальный сервер разработки (Watch)",
       "program": "${workspaceFolder}/src/index.ts",
-      "args": ["--watch"]
+      "args": ["--watch"],
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "🦊 Паблиш только в Firefox (AMO)",
-      "program": "${workspaceFolder}/scripts/publish-firefox.ts"
+      "program": "${workspaceFolder}/scripts/publish-firefox.ts",
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "🌐 Паблиш только в Chrome Web Store",
-      "program": "${workspaceFolder}/scripts/publish-chrome.ts"
+      "program": "${workspaceFolder}/scripts/publish-chrome.ts",
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "bun",
       "request": "launch",
       "name": "🍏 Паблиш только в Apple App Store (Safari)",
-      "program": "${workspaceFolder}/scripts/publish-safari.ts"
+      "program": "${workspaceFolder}/scripts/publish-safari.ts",
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }
