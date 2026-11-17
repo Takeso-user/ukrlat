@@ -1,6 +1,6 @@
 {
   "name": "ukrlat-extension",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Cross-browser extension for UkrLat transliteration (Firefox, Chrome, Safari)",
   "type": "module",
   "scripts": {
