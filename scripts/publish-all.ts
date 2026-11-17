@@ -10,40 +10,67 @@ async function runScript(scriptPath: string) {
 }
 
 async function publishAll() {
+  const rawArg = process.argv[2] || "patch";
+  const bumpType = rawArg.replace(/^--bump=/, "").toLowerCase();
+
+  const labelMap: Record<string, string> = {
+    patch: "МЕЛКИЙ ПАТЧ (3-я цифра: багфиксы)",
+    minor: "МИНОРНАЯ ВЕРСИЯ (2-я цифра: новые функции)",
+    major: "МАЖОРНАЯ ВЕРСИЯ (1-я цифра: глобальные изменения)",
+  };
+
+  const releaseLabel = labelMap[bumpType] || `РЕЛИЗ (${bumpType})`;
+
   console.log(
-    "🚀 === Publishing UkrLat Extension to All Stores (Firefox, Chrome, Safari) ===",
+    "=================================================================",
+  );
+  console.log(`🚀 ДЕПЛОЙ UKRLAT ВО ВСЕ МАГАЗИНЫ: ${releaseLabel}`);
+  console.log(
+    "=================================================================\n",
   );
 
-  const args = process.argv.slice(2);
-  const bumpArg = args.find((a) => a.startsWith("--bump="))?.split("=")[1];
+  // 1. Проверяем опубликованные версии во всех магазинах и инкрементируем SemVer
+  const newVersion = await bumpVersion(bumpType, { checkStores: true });
 
-  if (bumpArg) {
-    process.argv[2] = bumpArg;
-    bumpVersion();
-  }
+  console.log(
+    `📦 Начинаем автоматическую сборку и выгрузку версии ${newVersion}...\n`,
+  );
 
-  console.log("\n▶ [1/3] Publishing to Firefox AMO...");
+  // 2. Firefox AMO
+  console.log("▶ [1/3] Выгрузка в Mozilla Add-ons (Firefox AMO)...");
   const ffResult = await runScript("scripts/publish-firefox.ts");
 
-  console.log("\n▶ [2/3] Publishing to Chrome Web Store...");
+  // 3. Chrome Web Store
+  console.log("\n▶ [2/3] Выгрузка в Chrome Web Store...");
   const chromeResult = await runScript("scripts/publish-chrome.ts");
 
-  console.log("\n▶ [3/3] Publishing to Safari App Store...");
+  // 4. Safari Mac App Store
+  console.log("\n▶ [3/3] Выгрузка в Apple App Store Connect (Safari macOS)...");
   const safariResult = await runScript("scripts/publish-safari.ts");
 
-  console.log("\n📊 === Summary of Store Uploads ===");
   console.log(
-    `  Firefox AMO:      ${ffResult === 0 ? "✅ Success" : "❌ Failed / Skipped"}`,
+    "\n=================================================================",
+  );
+  console.log(`📊 Итоги деплоя версии ${newVersion}:`);
+  console.log(
+    "=================================================================",
   );
   console.log(
-    `  Chrome Web Store: ${chromeResult === 0 ? "✅ Success" : "❌ Failed / Skipped"}`,
+    `  🦊 Firefox AMO:      ${ffResult === 0 ? "✅ Успешно выгружено" : "❌ Ошибка / Пропущено"}`,
   );
   console.log(
-    `  Safari App Store: ${safariResult === 0 ? "✅ Success" : "❌ Failed / Skipped"}`,
+    `  🌐 Chrome Web Store: ${chromeResult === 0 ? "✅ Успешно выгружено" : "❌ Ошибка / Пропущено"}`,
   );
+  console.log(
+    `  🍎 Safari App Store: ${safariResult === 0 ? "✅ Успешно выгружено" : "❌ Ошибка / Пропущено"}`,
+  );
+  console.log(
+    "=================================================================\n",
+  );
+  console.log("💡 Для детальной проверки статусов выполните: bun run status\n");
 }
 
 publishAll().catch((err) => {
-  console.error("Publish all error:", err);
+  console.error("Ошибка при публикации:", err);
   process.exit(1);
 });

@@ -6,7 +6,7 @@
       "request": "launch",
       "name": "⚡ Dev Server (Watch)",
       "program": "${workspaceFolder}/src/index.ts",
-      "watch": true
+      "args": ["--watch"]
     },
     {
       "type": "bun",

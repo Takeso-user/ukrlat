@@ -18,10 +18,13 @@
     "version:patch": "bun run scripts/bump-version.ts patch",
     "version:minor": "bun run scripts/bump-version.ts minor",
     "version:major": "bun run scripts/bump-version.ts major",
+    "publish:patch": "bun run scripts/publish-all.ts patch",
+    "publish:minor": "bun run scripts/publish-all.ts minor",
+    "publish:major": "bun run scripts/publish-all.ts major",
+    "publish:all": "bun run scripts/publish-all.ts patch",
     "publish:firefox": "bun run scripts/publish-firefox.ts",
     "publish:chrome": "bun run scripts/publish-chrome.ts",
     "publish:safari": "bun run scripts/publish-safari.ts",
-    "publish:all": "bun run scripts/publish-all.ts",
     "status": "bun run scripts/status.ts"
   },
   "repository": {
