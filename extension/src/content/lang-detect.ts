@@ -1,14 +1,17 @@
 /**
  * Language detection module for UkrLat.
- * Determines whether a text sample or the current web page is reliably Ukrainian.
+ * Determines whether a text sample or web page is PREDOMINANTLY Ukrainian,
+ * while safely ignoring other Slavic and non-Ukrainian Cyrillic languages
+ * (Russian, Bulgarian, Serbian, Macedonian, Belarusian, Kazakh, etc.).
  */
 
 export interface LanguageDetectionResult {
   isUkrainian: boolean;
-  detectedLang: "uk" | "ru" | "other";
+  detectedLang: "uk" | "foreign_cyrillic" | "other";
   confidence: number; // 0 to 1
+  ukPercentage: number; // 0 to 100%
   ukScore: number;
-  ruScore: number;
+  foreignScore: number;
 }
 
 export interface DetectionOptions {
@@ -16,20 +19,29 @@ export interface DetectionOptions {
   ogLocale?: string | null;
 }
 
-// Letters that exist ONLY in Ukrainian (never in standard Russian)
-const UKRAINIAN_EXCLUSIVE_REGEX = /[іїєґІЇЄҐ]/g;
+// Letters that exist ONLY in Ukrainian (never in standard Russian, Bulgarian, Serbian)
+export const UKRAINIAN_EXCLUSIVE_REGEX = /[іїєґІЇЄҐ]/g;
 
 // Typical Ukrainian word-internal apostrophe (e.g. м'ясо, п'ять, з'їзд, сім'я)
-const UKRAINIAN_APOSTROPHE_REGEX =
+export const UKRAINIAN_APOSTROPHE_REGEX =
   /[бпвмфгркхжчшщБПВМФГРКХЖЧШЩ]['’`ʼ][яюєїЯЮЄЇ]/g;
 
-// Letters that exist ONLY in Russian (never in standard Ukrainian)
-const RUSSIAN_EXCLUSIVE_REGEX = /[ыэъёЫЭЪЁ]/g;
+/**
+ * Characters that exist in other Cyrillic alphabets, but NEVER in standard Ukrainian:
+ * - Russian: ы, э, ъ, ё
+ * - Bulgarian: ъ (used as a frequent vowel)
+ * - Serbian / Montenegrin: ђ, ћ, џ, ј, љ, њ
+ * - Macedonian: ѓ, ќ, ѕ, ј, љ, њ, џ
+ * - Belarusian: ў, ы, э, ё
+ * - Kazakh & Central Asian Cyrillic: ә, ғ, қ, ң, ө, ұ, ү, һ, ҷ, ӣ, ҳ, җ
+ */
+export const NON_UKRAINIAN_CYRILLIC_REGEX =
+  /[ыэъёўђћџјљњѓќѕәғқңөұүһҷӣҳҗЫЭЪЁЎЂЋЏЈЉЊЃЌЅӘҒҚҢӨҰҮҺҶӢҲҖ]/g;
 
-// General Cyrillic characters
-const CYRILLIC_REGEX = /[а-яА-ЯёЁіІїЇєЄґҐ]/g;
+// General Cyrillic characters range
+const GENERAL_CYRILLIC_REGEX = /[\u0400-\u04FF]/g;
 
-// High-frequency distinctive Ukrainian stop words (normalized to lowercase)
+// Distinctive Ukrainian high-frequency stop words
 const UKRAINIAN_STOP_WORDS = new Set([
   "та",
   "що",
@@ -129,8 +141,9 @@ const UKRAINIAN_STOP_WORDS = new Set([
   "поки",
 ]);
 
-// High-frequency distinctive Russian stop words (normalized to lowercase)
-const RUSSIAN_STOP_WORDS = new Set([
+// Distinctive non-Ukrainian Cyrillic stop words (Russian, Bulgarian, Serbian, Belarusian)
+const NON_UKRAINIAN_STOP_WORDS = new Set([
+  // Russian
   "что",
   "как",
   "это",
@@ -217,6 +230,66 @@ const RUSSIAN_STOP_WORDS = new Set([
   "какой",
   "какая",
   "какие",
+  "чтобы",
+  "без",
+  "перед",
+  "около",
+  // Bulgarian
+  "съм",
+  "във",
+  "това",
+  "който",
+  "която",
+  "които",
+  "всички",
+  "един",
+  "една",
+  "тези",
+  "още",
+  "няма",
+  "само",
+  "като",
+  "когато",
+  "беше",
+  "през",
+  "защото",
+  "всичко",
+  "много",
+  // Serbian / Montenegrin / Bosnian (Cyrillic)
+  "као",
+  "бити",
+  "јесте",
+  "само",
+  "ово",
+  "тога",
+  "све",
+  "ако",
+  "када",
+  "већ",
+  "још",
+  "због",
+  "након",
+  "такође",
+  "између",
+  "против",
+  // Belarusian
+  "гэта",
+  "што",
+  "які",
+  "быў",
+  "яны",
+  "яго",
+  "такі",
+  "пасля",
+  "таксама",
+  "якая",
+  "якое",
+  "якія",
+  "ёсць",
+  "вельмі",
+  "толькі",
+  "больш",
+  "разам",
 ]);
 
 /**
@@ -228,7 +301,8 @@ function extractWords(text: string): string[] {
 }
 
 /**
- * Detects whether the given text is reliably Ukrainian.
+ * Evaluates whether text is PREDOMINANTLY Ukrainian by calculating the ratio
+ * of Ukrainian language markers against other Cyrillic languages.
  */
 export function detectLanguage(
   text: string,
@@ -239,12 +313,13 @@ export function detectLanguage(
       isUkrainian: false,
       detectedLang: "other",
       confidence: 0,
+      ukPercentage: 0,
       ukScore: 0,
-      ruScore: 0,
+      foreignScore: 0,
     };
   }
 
-  const cyrillicMatches = text.match(CYRILLIC_REGEX);
+  const cyrillicMatches = text.match(GENERAL_CYRILLIC_REGEX);
   const cyrillicCount = cyrillicMatches ? cyrillicMatches.length : 0;
 
   // Metadata cues
@@ -256,125 +331,116 @@ export function detectLanguage(
     ogLocale.startsWith("uk") ||
     ogLocale.includes("uk_ua");
 
-  const hasRuLangAttr =
+  const hasForeignLangAttr =
     langAttr.startsWith("ru") ||
     langAttr.startsWith("be") ||
+    langAttr.startsWith("bg") ||
+    langAttr.startsWith("sr") ||
+    langAttr.startsWith("mk") ||
+    langAttr.startsWith("kk") ||
+    langAttr.startsWith("tg") ||
     ogLocale.startsWith("ru") ||
-    ogLocale.includes("ru_ru");
+    ogLocale.startsWith("bg") ||
+    ogLocale.startsWith("sr") ||
+    ogLocale.startsWith("be");
 
-  // If there's barely any Cyrillic text
-  if (cyrillicCount < 10 && !hasUkLangAttr) {
+  // If there's barely any Cyrillic text and no relevant language attributes
+  if (cyrillicCount < 20 && !hasUkLangAttr && !hasForeignLangAttr) {
     return {
       isUkrainian: false,
       detectedLang: "other",
       confidence: 0,
+      ukPercentage: 0,
       ukScore: 0,
-      ruScore: 0,
+      foreignScore: 0,
     };
   }
 
-  // Character-level metrics
+  // 1. Character-level counts
   const ukLetters = text.match(UKRAINIAN_EXCLUSIVE_REGEX)?.length ?? 0;
   const ukApostrophes = text.match(UKRAINIAN_APOSTROPHE_REGEX)?.length ?? 0;
   const ukCharCount = ukLetters + ukApostrophes;
 
-  const ruCharCount = text.match(RUSSIAN_EXCLUSIVE_REGEX)?.length ?? 0;
+  const foreignCharCount =
+    text.match(NON_UKRAINIAN_CYRILLIC_REGEX)?.length ?? 0;
 
-  // Lexical / Stop-word metrics
+  // 2. Lexical / Stop-word counts
   const words = extractWords(text);
   let ukWordCount = 0;
-  let ruWordCount = 0;
+  let foreignWordCount = 0;
 
   for (const word of words) {
     if (UKRAINIAN_STOP_WORDS.has(word)) {
       ukWordCount++;
     }
-    if (RUSSIAN_STOP_WORDS.has(word)) {
-      ruWordCount++;
+    if (NON_UKRAINIAN_STOP_WORDS.has(word)) {
+      foreignWordCount++;
     }
   }
 
-  // Compute weighted scores
-  let ukScore = ukCharCount * 4 + ukWordCount * 3;
-  let ruScore = ruCharCount * 4 + ruWordCount * 3;
+  // 3. Composite score calculation
+  let ukScore = ukCharCount * 3 + ukWordCount * 4;
+  let foreignScore = foreignCharCount * 3 + foreignWordCount * 4;
 
   if (hasUkLangAttr) {
-    ukScore += 12;
+    ukScore += 15;
   }
-  if (hasRuLangAttr) {
-    ruScore += 16;
-  }
-
-  // Rule 1: Clear Russian markers present and no Ukrainian markers
-  if (ruCharCount > 0 && ukCharCount === 0 && ukWordCount === 0) {
-    return {
-      isUkrainian: false,
-      detectedLang: "ru",
-      confidence: 0.95,
-      ukScore,
-      ruScore,
-    };
+  if (hasForeignLangAttr) {
+    foreignScore += 20;
   }
 
-  // Rule 2: Russian score distinctly dominates
-  if (ruScore > ukScore * 1.3 || (ruScore > 0 && ukScore === 0)) {
-    return {
-      isUkrainian: false,
-      detectedLang: "ru",
-      confidence: Math.min(1, ruScore / 20),
-      ukScore,
-      ruScore,
-    };
-  }
+  const totalScore = ukScore + foreignScore;
 
-  // Rule 3: Clear Ukrainian markers present
-  if (ukScore >= 2 && ukScore > ruScore) {
-    const confidence = Math.min(
-      1,
-      0.5 + (ukScore - ruScore) / (ukScore + ruScore + 5),
-    );
-    return {
-      isUkrainian: true,
-      detectedLang: "uk",
-      confidence,
-      ukScore,
-      ruScore,
-    };
-  }
-
-  // Rule 4: Ambiguous / shared letters only (e.g. short Cyrillic phrase)
-  if (cyrillicCount >= 10) {
-    if (hasUkLangAttr && !hasRuLangAttr) {
+  // Case A: No discriminating markers found at all
+  if (totalScore === 0) {
+    if (hasUkLangAttr && cyrillicCount >= 20) {
       return {
         isUkrainian: true,
         detectedLang: "uk",
-        confidence: 0.7,
+        confidence: 0.75,
+        ukPercentage: 100,
         ukScore,
-        ruScore,
+        foreignScore,
       };
     }
-    if (hasRuLangAttr) {
-      return {
-        isUkrainian: false,
-        detectedLang: "ru",
-        confidence: 0.7,
-        ukScore,
-        ruScore,
-      };
-    }
+    return {
+      isUkrainian: false,
+      detectedLang: cyrillicCount >= 20 ? "foreign_cyrillic" : "other",
+      confidence: 0.2,
+      ukPercentage: 0,
+      ukScore,
+      foreignScore,
+    };
   }
 
+  // Case B: Calculate proportion / percentage of Ukrainian markers
+  const ukRatio = ukScore / totalScore;
+  const ukPercentage = Math.round(ukRatio * 100);
+
+  // A page is PREDOMINANTLY Ukrainian if:
+  // 1. It has noticeable Ukrainian evidence (ukScore >= 4)
+  // 2. Ukrainian markers constitute at least 70% of all language markers (ukPercentage >= 70)
+  //    (meaning a couple of Russian/foreign words in a quote or comment will NOT block it).
+  const isPredominantlyUkrainian = ukScore >= 4 && ukPercentage >= 70;
+
+  const confidence = Math.min(1, Math.max(0.5, ukRatio));
+
   return {
-    isUkrainian: false,
-    detectedLang: cyrillicCount > 10 ? "other" : "other",
-    confidence: 0.2,
+    isUkrainian: isPredominantlyUkrainian,
+    detectedLang: isPredominantlyUkrainian
+      ? "uk"
+      : foreignScore > 0
+        ? "foreign_cyrillic"
+        : "other",
+    confidence,
+    ukPercentage,
     ukScore,
-    ruScore,
+    foreignScore,
   };
 }
 
 /**
- * Samples visible text content from the current document to analyze page language.
+ * Samples text content from the current document to analyze page language.
  */
 export function samplePageText(): string {
   if (typeof document === "undefined") return "";
@@ -396,7 +462,7 @@ export function samplePageText(): string {
 
   // Headings
   const headings = document.querySelectorAll("h1, h2, h3");
-  const maxHeadings = Math.min(headings.length, 12);
+  const maxHeadings = Math.min(headings.length, 15);
   for (let i = 0; i < maxHeadings; i++) {
     const text = headings[i]?.textContent?.trim();
     if (text) samples.push(text);
@@ -406,7 +472,7 @@ export function samplePageText(): string {
   const paragraphs = document.querySelectorAll(
     "main p, article p, [role='main'] p, p",
   );
-  const maxParagraphs = Math.min(paragraphs.length, 25);
+  const maxParagraphs = Math.min(paragraphs.length, 30);
   for (let i = 0; i < maxParagraphs; i++) {
     const text = paragraphs[i]?.textContent?.trim();
     if (text) {
@@ -416,8 +482,8 @@ export function samplePageText(): string {
 
   // Fallback to body text sample if structured selectors yielded little text
   const currentTotal = samples.join(" ").length;
-  if (currentTotal < 200 && document.body) {
-    const bodySample = document.body.textContent?.slice(0, 3000);
+  if (currentTotal < 250 && document.body) {
+    const bodySample = document.body.textContent?.slice(0, 4000);
     if (bodySample) samples.push(bodySample);
   }
 
@@ -425,7 +491,7 @@ export function samplePageText(): string {
 }
 
 /**
- * Evaluates whether the current DOM page is reliably Ukrainian.
+ * Evaluates whether the current DOM page is reliably and predominantly Ukrainian.
  */
 export function isUkrainianPage(): boolean {
   if (typeof document === "undefined") return false;

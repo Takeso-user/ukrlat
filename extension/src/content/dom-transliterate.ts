@@ -1,5 +1,5 @@
 import { transliterateWithCase } from "../transliterate";
-import { isUkrainianPage } from "./lang-detect";
+import { isUkrainianPage, NON_UKRAINIAN_CYRILLIC_REGEX } from "./lang-detect";
 
 const IGNORED_TAGS = new Set([
   "SCRIPT",
@@ -14,9 +14,6 @@ const IGNORED_TAGS = new Set([
   "SVG",
   "MATH",
 ]);
-
-// Russian-exclusive letters that should never be treated as Ukrainian
-const RUSSIAN_EXCLUSIVE_REGEX = /[ыэъёЫЭЪЁ]/;
 
 // Cache original text for text nodes to allow restoring when toggled off
 const originalTextMap = new WeakMap<Text, string>();
@@ -73,8 +70,9 @@ export function transliterateTextNode(node: Text): void {
     return;
   }
 
-  // If text node explicitly contains Russian-exclusive letters, skip it to avoid corruption
-  if (RUSSIAN_EXCLUSIVE_REGEX.test(currentVal)) {
+  // If text node contains non-Ukrainian Cyrillic letters (e.g. quote in Russian, Bulgarian, Serbian),
+  // skip it to avoid producing corrupted Frankenstein script.
+  if (NON_UKRAINIAN_CYRILLIC_REGEX.test(currentVal)) {
     return;
   }
 
@@ -139,7 +137,7 @@ export function walkTextNodes(
 
 /**
  * Enables page transliteration.
- * If force is false, verifies that the page is Ukrainian first.
+ * If force is false, verifies that the page is predominantly Ukrainian first.
  * Returns true if transliteration was activated, false otherwise.
  */
 export function enablePageTransliteration(force = false): boolean {
