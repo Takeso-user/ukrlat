@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "⚡ Dev Server (Watch)",
+      "program": "${workspaceFolder}/src/index.ts",
+      "watch": true
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "📊 Check Multi-Store Status",
+      "program": "${workspaceFolder}/scripts/status.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "🧪 Run Extension Tests",
+      "program": "${workspaceFolder}/extension/tests/extension.test.ts"
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "📊 Check Multi-Store Status",
+      "type": "shell",
+      "command": "bun run status",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true
+      },
+      "detail": "Проверить статус модерации в Chrome Web Store, Mozilla AMO и Apple App Store"
+    },
+    {
+      "label": "⚡ Local Dev Server",
+      "type": "shell",
+      "command": "bun run dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Запустить локальный сервер веб-приложения с горячей перезагрузкой (http://localhost:3000)"
+    },
+    {
+      "label": "📦 Build: Extension (All Browsers)",
+      "type": "shell",
+      "command": "bun run build:extension",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "detail": "Собрать бандлы и архивы расширения для Chrome, Firefox и Safari"
+    },
+    {
+      "label": "📦 Build: Chrome Extension",
+      "type": "shell",
+      "command": "cd extension && bun run build:chrome",
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Собрать архив extension/dist/ukrlat-chrome.zip"
+    },
+    {
+      "label": "📦 Build: Firefox Extension",
+      "type": "shell",
+      "command": "cd extension && bun run build:firefox",
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Собрать архив extension/dist/ukrlat-firefox.zip"
+    },
+    {
+      "label": "📦 Build: Safari Extension",
+      "type": "shell",
+      "command": "cd extension && bun run build:safari",
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Собрать архив extension/dist/ukrlat-safari.zip и Xcode проект"
+    },
+    {
+      "label": "🧪 Run Tests (Extension)",
+      "type": "shell",
+      "command": "bun run test:extension",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "detail": "Запустить юнит-тесты транслитерации расширения"
+    },
+    {
+      "label": "🔍 Lint & Typecheck",
+      "type": "shell",
+      "command": "bun run lint && bun run typecheck",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "detail": "Проверить код линтером Biome и компилятором TypeScript"
+    },
+    {
+      "label": "🔖 Bump Version: Patch (1.0.x)",
+      "type": "shell",
+      "command": "bun run version:patch",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "detail": "Поднять патч-версию (1.0.x -> 1.0.x+1) во всех манифестах и package.json"
+    },
+    {
+      "label": "🚀 Publish: Chrome Web Store",
+      "type": "shell",
+      "command": "bun run publish:chrome",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "detail": "Собрать бандл и автоматически опубликовать в Chrome Web Store API"
+    },
+    {
+      "label": "🚀 Publish: Mozilla Add-ons (AMO)",
+      "type": "shell",
+      "command": "bun run publish:firefox",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "detail": "Собрать бандл, подписать и отправить в каталог Mozilla Add-ons"
+    },
+    {
+      "label": "🚀 Publish: Apple Safari (Mac App Store)",
+      "type": "shell",
+      "command": "bun run publish:safari",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "detail": "Собрать xcodebuild архив, загрузить в App Store Connect и отправить на ревью"
+    },
+    {
+      "label": "🌐 Publish: All Stores (Chrome + Firefox + Safari)",
+      "type": "shell",
+      "command": "bun run publish:all",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "detail": "Опубликовать расширение одновременно во все три магазина"
+    }
+  ]
+}
