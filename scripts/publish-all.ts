@@ -1,7 +1,19 @@
 import { bumpVersion } from "./bump-version";
 
+function getCleanEnv(): Record<string, string | undefined> {
+  const env: Record<string, string | undefined> = { ...process.env };
+  delete env.BUN_INSPECT;
+  delete env.BUN_INSPECT_PORT;
+  delete env.BUN_INSPECT_NOTIFY;
+  delete env.BUN_INSPECT_SOCKET;
+  delete env.NODE_OPTIONS;
+  delete env.VSCODE_INSPECTOR_OPTIONS;
+  return env;
+}
+
 async function runScript(scriptPath: string) {
   const proc = Bun.spawn(["bun", "run", scriptPath], {
+    env: getCleanEnv(),
     stdout: "inherit",
     stderr: "inherit",
   });

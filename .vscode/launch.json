@@ -7,6 +7,7 @@
       "name": "🚀 Паблиш: мелкий патч (3-я цифра: багфиксы)",
       "program": "${workspaceFolder}/scripts/publish-all.ts",
       "args": ["patch"],
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -15,6 +16,7 @@
       "name": "🚀 Паблиш: минорная версия (2-я цифра: новые функции)",
       "program": "${workspaceFolder}/scripts/publish-all.ts",
       "args": ["minor"],
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -23,6 +25,7 @@
       "name": "🚀 Паблиш: мажорная версия (1-я цифра: глобальный релиз)",
       "program": "${workspaceFolder}/scripts/publish-all.ts",
       "args": ["major"],
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -30,6 +33,7 @@
       "request": "launch",
       "name": "📊 Проверка статуса модерации (все 3 магазина)",
       "program": "${workspaceFolder}/scripts/status.ts",
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -38,6 +42,7 @@
       "name": "📦 Собрать бандлы расширения (build:extension)",
       "program": "${workspaceFolder}/extension/build.ts",
       "cwd": "${workspaceFolder}/extension",
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -45,6 +50,7 @@
       "request": "launch",
       "name": "🧪 Запустить все тесты (UkrLat Tests)",
       "program": "${workspaceFolder}/scripts/run-tests.ts",
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -60,6 +66,7 @@
       "request": "launch",
       "name": "🦊 Паблиш только в Firefox (AMO)",
       "program": "${workspaceFolder}/scripts/publish-firefox.ts",
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -67,6 +74,7 @@
       "request": "launch",
       "name": "🌐 Паблиш только в Chrome Web Store",
       "program": "${workspaceFolder}/scripts/publish-chrome.ts",
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     },
     {
@@ -74,6 +82,7 @@
       "request": "launch",
       "name": "🍏 Паблиш только в Apple App Store (Safari)",
       "program": "${workspaceFolder}/scripts/publish-safari.ts",
+      "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
     }
   ]

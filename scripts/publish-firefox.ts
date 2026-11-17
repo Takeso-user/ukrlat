@@ -4,6 +4,17 @@ const rootDir = join(import.meta.dir, "..");
 const extDir = join(rootDir, "extension");
 const ffSourceDir = join(extDir, "dist", "firefox");
 
+function getCleanEnv(): Record<string, string | undefined> {
+  const env: Record<string, string | undefined> = { ...process.env };
+  delete env.BUN_INSPECT;
+  delete env.BUN_INSPECT_PORT;
+  delete env.BUN_INSPECT_NOTIFY;
+  delete env.BUN_INSPECT_SOCKET;
+  delete env.NODE_OPTIONS;
+  delete env.VSCODE_INSPECTOR_OPTIONS;
+  return env;
+}
+
 async function runCommand(
   cmd: string[],
   cwd: string = rootDir,
@@ -11,6 +22,7 @@ async function runCommand(
   console.log(`  $ ${cmd.join(" ")}`);
   const proc = Bun.spawn(cmd, {
     cwd,
+    env: getCleanEnv(),
     stdout: "inherit",
     stderr: "inherit",
   });

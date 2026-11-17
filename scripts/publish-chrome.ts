@@ -4,6 +4,22 @@ const rootDir = join(import.meta.dir, "..");
 const extDir = join(rootDir, "extension");
 const chromeZip = join(extDir, "dist", "ukrlat-chrome.zip");
 
+function getCleanEnv(
+  extraEnv: Record<string, string> = {},
+): Record<string, string | undefined> {
+  const env: Record<string, string | undefined> = {
+    ...process.env,
+    ...extraEnv,
+  };
+  delete env.BUN_INSPECT;
+  delete env.BUN_INSPECT_PORT;
+  delete env.BUN_INSPECT_NOTIFY;
+  delete env.BUN_INSPECT_SOCKET;
+  delete env.NODE_OPTIONS;
+  delete env.VSCODE_INSPECTOR_OPTIONS;
+  return env;
+}
+
 async function runCommand(
   cmd: string[],
   cwd: string = rootDir,
@@ -12,7 +28,7 @@ async function runCommand(
   console.log(`  $ ${cmd.join(" ")}`);
   const proc = Bun.spawn(cmd, {
     cwd,
-    env: { ...process.env, ...extraEnv },
+    env: getCleanEnv(extraEnv),
     stdout: "inherit",
     stderr: "inherit",
   });
