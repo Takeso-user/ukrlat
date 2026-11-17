@@ -1,4 +1,5 @@
 import { transliterateWithCase } from "../transliterate";
+import { isUkrainianPage } from "./lang-detect";
 
 const IGNORED_TAGS = new Set([
   "SCRIPT",
@@ -13,6 +14,9 @@ const IGNORED_TAGS = new Set([
   "SVG",
   "MATH",
 ]);
+
+// Russian-exclusive letters that should never be treated as Ukrainian
+const RUSSIAN_EXCLUSIVE_REGEX = /[ыэъёЫЭЪЁ]/;
 
 // Cache original text for text nodes to allow restoring when toggled off
 const originalTextMap = new WeakMap<Text, string>();
@@ -52,6 +56,13 @@ export function containsUkrainianCyrillic(text: string): boolean {
 }
 
 /**
+ * Returns whether DOM transliteration is currently active on the page.
+ */
+export function getIsTransliterationActive(): boolean {
+  return isTransliterationActive;
+}
+
+/**
  * Transliterates a single DOM text node and records its original value.
  */
 export function transliterateTextNode(node: Text): void {
@@ -59,6 +70,11 @@ export function transliterateTextNode(node: Text): void {
 
   const currentVal = node.nodeValue ?? "";
   if (!currentVal.trim() || !containsUkrainianCyrillic(currentVal)) {
+    return;
+  }
+
+  // If text node explicitly contains Russian-exclusive letters, skip it to avoid corruption
+  if (RUSSIAN_EXCLUSIVE_REGEX.test(currentVal)) {
     return;
   }
 
@@ -122,10 +138,17 @@ export function walkTextNodes(
 }
 
 /**
- * Enables automatic page transliteration and starts the mutation observer.
+ * Enables page transliteration.
+ * If force is false, verifies that the page is Ukrainian first.
+ * Returns true if transliteration was activated, false otherwise.
  */
-export function enablePageTransliteration(): void {
-  if (isTransliterationActive) return;
+export function enablePageTransliteration(force = false): boolean {
+  if (isTransliterationActive) return true;
+
+  if (!force && !isUkrainianPage()) {
+    return false;
+  }
+
   isTransliterationActive = true;
 
   if (document.body) {
@@ -158,6 +181,8 @@ export function enablePageTransliteration(): void {
       characterData: true,
     });
   }
+
+  return true;
 }
 
 /**
@@ -174,4 +199,21 @@ export function disablePageTransliteration(): void {
   if (document.body) {
     walkTextNodes(document.body, restoreTextNode);
   }
+}
+
+/**
+ * Toggles page transliteration on/off manually.
+ * When switching on, force is true (manual user override).
+ */
+export function togglePageTransliteration(forceTarget?: boolean): boolean {
+  const targetState =
+    forceTarget !== undefined ? forceTarget : !isTransliterationActive;
+
+  if (targetState) {
+    enablePageTransliteration(true);
+  } else {
+    disablePageTransliteration();
+  }
+
+  return isTransliterationActive;
 }

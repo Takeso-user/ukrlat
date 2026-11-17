@@ -19,14 +19,35 @@
       <div id="statusBadge" class="status-badge active">Увімкнено</div>
     </header>
 
+    <!-- Current Tab Status & Manual Controls -->
+    <section class="tab-card" id="tabCard">
+      <div class="tab-header">
+        <div class="tab-info">
+          <span class="tab-domain" id="tabDomain">Визначення вкладки...</span>
+          <span class="tab-lang-badge" id="tabLangBadge">Перевірка мови...</span>
+        </div>
+        <button type="button" id="tabToggleBtn" class="tab-toggle-btn" title="Транслітерувати або відновити сторінку">
+          Транслітерувати
+        </button>
+      </div>
+
+      <div class="tab-override-row" id="tabOverrideRow">
+        <label class="site-toggle-label" for="siteAlwaysToggle">
+          <input type="checkbox" id="siteAlwaysToggle">
+          <span class="site-toggle-text">Завжди транслювати цей сайт</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Global Settings -->
     <section class="settings-card">
       <div class="setting-row">
         <div class="setting-info">
-          <span class="setting-title">Авто-транслітерація сторінок</span>
-          <span class="setting-desc">Конвертує текст на відвідуваних сторінках</span>
+          <span class="setting-title">Авто-транслітерація укр. сторінок</span>
+          <span class="setting-desc">Тільки на сайтах з виявленою українською мовою</span>
         </div>
-        <label class="switch" for="toggleAutoPage" aria-label="Авто-транслітерація сторінок">
-          <input type="checkbox" id="toggleAutoPage" checked aria-label="Авто-транслітерація сторінок">
+        <label class="switch" for="toggleAutoPage" aria-label="Авто-транслітерація українських сторінок">
+          <input type="checkbox" id="toggleAutoPage" checked aria-label="Авто-транслітерація українських сторінок">
           <span class="slider"></span>
         </label>
       </div>
@@ -43,6 +64,7 @@
       </div>
     </section>
 
+    <!-- Quick Manual Converter -->
     <section class="converter-card">
       <div class="section-label">Швидкий перекладач</div>
       
@@ -64,7 +86,7 @@
     </section>
 
     <footer class="footer">
-      <span class="hotkey-tip">Підказка: <code>Alt+U</code> конвертує виділений фрагмент</span>
+      <span class="hotkey-tip"><code>Alt+U</code> виділений текст &bull; <code>Alt+Shift+U</code> сторінка</span>
       <a href="https://web-production-a554818f.up.railway.app" target="_blank" class="web-link">Веб-версія &nearr;</a>
     </footer>
   </div>

@@ -62,6 +62,7 @@ function handleInputEvent(event: Event): void {
 
 /**
  * Transliterates currently selected text in active input or on the document.
+ * Safely preserves DOM elements when transliterating multi-node selections.
  */
 export function transliterateCurrentSelection(): void {
   const activeEl = document.activeElement;
@@ -84,14 +85,49 @@ export function transliterateCurrentSelection(): void {
 
   // If outside of an input, transliterate the window selection
   const selection = window.getSelection();
-  if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
-    const selectedText = selection.toString();
-    if (containsUkrainianCyrillic(selectedText)) {
-      const convertedText = transliterateWithCase(selectedText);
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(document.createTextNode(convertedText));
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+    return;
+  }
+
+  const range = selection.getRangeAt(0);
+
+  // Case 1: Selection is inside a single text node
+  if (
+    range.startContainer === range.endContainer &&
+    range.startContainer.nodeType === Node.TEXT_NODE
+  ) {
+    const textNode = range.startContainer as Text;
+    const full = textNode.nodeValue ?? "";
+    const start = range.startOffset;
+    const end = range.endOffset;
+    const selected = full.slice(start, end);
+
+    if (containsUkrainianCyrillic(selected)) {
+      const converted = transliterateWithCase(selected);
+      textNode.nodeValue = full.slice(0, start) + converted + full.slice(end);
     }
+    return;
+  }
+
+  // Case 2: Selection spans multiple DOM nodes — safely transliterate text nodes in place
+  const walker = document.createTreeWalker(
+    range.commonAncestorContainer,
+    NodeFilter.SHOW_TEXT,
+  );
+
+  let node = walker.nextNode();
+  while (node) {
+    if (
+      selection.containsNode(node, true) &&
+      node.nodeType === Node.TEXT_NODE
+    ) {
+      const textNode = node as Text;
+      const val = textNode.nodeValue ?? "";
+      if (val && containsUkrainianCyrillic(val)) {
+        textNode.nodeValue = transliterateWithCase(val);
+      }
+    }
+    node = walker.nextNode();
   }
 }
 

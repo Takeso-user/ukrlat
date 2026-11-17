@@ -42,6 +42,12 @@
         "default": "Alt+U"
       },
       "description": "Транслітерувати виділений текст латинкою"
+    },
+    "toggle-page": {
+      "suggested_key": {
+        "default": "Alt+Shift+U"
+      },
+      "description": "Увімкнути/вимкнути латинку на поточній сторінці"
     }
   }
 }
