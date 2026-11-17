@@ -4,21 +4,67 @@
     {
       "type": "bun",
       "request": "launch",
-      "name": "⚡ Dev Server (Watch)",
+      "name": "🚀 Паблиш: мелкий патч (3-я цифра: багфиксы)",
+      "program": "${workspaceFolder}/scripts/publish-all.ts",
+      "args": ["patch"]
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "🚀 Паблиш: минорная версия (2-я цифра: новые функции)",
+      "program": "${workspaceFolder}/scripts/publish-all.ts",
+      "args": ["minor"]
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "🚀 Паблиш: мажорная версия (1-я цифра: глобальный релиз)",
+      "program": "${workspaceFolder}/scripts/publish-all.ts",
+      "args": ["major"]
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "📊 Проверка статуса модерации (все 3 магазина)",
+      "program": "${workspaceFolder}/scripts/status.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "📦 Собрать бандлы расширения (build:extension)",
+      "program": "${workspaceFolder}/extension/build.ts",
+      "cwd": "${workspaceFolder}/extension"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "🧪 Запустить все тесты (UkrLat Tests)",
+      "program": "${workspaceFolder}/scripts/run-tests.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "⚡ Локальный сервер разработки (Watch)",
       "program": "${workspaceFolder}/src/index.ts",
       "args": ["--watch"]
     },
     {
       "type": "bun",
       "request": "launch",
-      "name": "📊 Check Multi-Store Status",
-      "program": "${workspaceFolder}/scripts/status.ts"
+      "name": "🦊 Паблиш только в Firefox (AMO)",
+      "program": "${workspaceFolder}/scripts/publish-firefox.ts"
     },
     {
       "type": "bun",
       "request": "launch",
-      "name": "🧪 Run Extension Tests",
-      "program": "${workspaceFolder}/extension/tests/extension.test.ts"
+      "name": "🌐 Паблиш только в Chrome Web Store",
+      "program": "${workspaceFolder}/scripts/publish-chrome.ts"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "🍏 Паблиш только в Apple App Store (Safari)",
+      "program": "${workspaceFolder}/scripts/publish-safari.ts"
     }
   ]
 }

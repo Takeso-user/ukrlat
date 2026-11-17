@@ -8,6 +8,7 @@
     "start": "bun run src/index.ts",
     "dev": "bun --watch src/index.ts",
     "test": "bun test",
+    "test:runner": "bun run scripts/run-tests.ts",
     "test:extension": "cd extension && bun test",
     "test:all": "bun test && cd extension && bun test",
     "typecheck": "tsc --noEmit && cd extension && tsc --noEmit",

@@ -93,6 +93,42 @@
         "clear": true
       },
       "detail": "Скомпилировать расширение и упаковать .zip для Chrome, Firefox и Safari"
+    },
+    {
+      "label": "🦊 Паблиш только в Firefox (AMO)",
+      "type": "shell",
+      "command": "bun run publish:firefox",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "detail": "Выгрузить текущую сборку ukrlat-firefox.zip на addons.mozilla.org"
+    },
+    {
+      "label": "🌐 Паблиш только в Chrome Web Store",
+      "type": "shell",
+      "command": "bun run publish:chrome",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "detail": "Выгрузить текущую сборку ukrlat-chrome.zip в Chrome Web Store API v2"
+    },
+    {
+      "label": "🍏 Паблиш только в Apple App Store (Safari)",
+      "type": "shell",
+      "command": "bun run publish:safari",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "detail": "Проверить статус приложения в App Store Connect через REST API"
     }
   ]
 }
