@@ -1,5 +1,10 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import {
+  getAppleApiConfig,
+  getAppleStatus,
+  submitForReview,
+} from "./apple-api";
 
 const rootDir = join(import.meta.dir, "..");
 const extDir = join(rootDir, "extension");
@@ -95,6 +100,42 @@ async function publishSafari() {
   console.log(
     "\n🎉 Safari extension uploaded to App Store Connect successfully!",
   );
+
+  // 4. Automated submission via App Store Connect REST API if configured
+  const appleConfig = getAppleApiConfig();
+  if (appleConfig) {
+    console.log(
+      "\n[4/4] Automating App Store Connect review submission via API...",
+    );
+    try {
+      const { versions } = await getAppleStatus(appleConfig);
+      const latestVersion = versions[0];
+      if (
+        latestVersion &&
+        latestVersion.attributes?.appStoreState === "PREPARE_FOR_SUBMISSION"
+      ) {
+        console.log(
+          `  Submitting version ${latestVersion.attributes.versionString} for review...`,
+        );
+        await submitForReview(appleConfig, latestVersion.id);
+        console.log("  ✓ Successfully submitted to App Review via API!");
+      } else {
+        console.log(
+          `  Version state is: ${latestVersion?.attributes?.appStoreState || "READY"}`,
+        );
+      }
+    } catch (apiErr: unknown) {
+      const msg = apiErr instanceof Error ? apiErr.message : String(apiErr);
+      console.warn("  ⚠️ Auto-submission note:", msg);
+      console.log(
+        "  (The build was uploaded to App Store Connect, you can also submit it manually in Connect)",
+      );
+    }
+  } else {
+    console.log(
+      "\n💡 Tip: To automate submitting for review without opening the browser, configure APPLE_KEY_ID, APPLE_ISSUER_ID, and APPLE_PRIVATE_KEY_PATH in .env.",
+    );
+  }
 }
 
 publishSafari().catch((err) => {

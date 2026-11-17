@@ -23,6 +23,9 @@ async function publishChrome() {
   console.log("\n🌐 === UkrLat Chrome Web Store Upload ===");
 
   const extensionId = process.env.CHROME_EXTENSION_ID?.trim();
+  const publisherId =
+    process.env.CHROME_PUBLISHER_ID?.trim() ||
+    "2eac7970-16dc-4341-9754-ea8698fc781d";
   const clientId = process.env.CHROME_CLIENT_ID?.trim();
   const clientSecret = process.env.CHROME_CLIENT_SECRET?.trim();
   const refreshToken = process.env.CHROME_REFRESH_TOKEN?.trim();
@@ -33,6 +36,7 @@ async function publishChrome() {
     );
     console.error("Please add the following to your .env file:");
     console.error("  CHROME_EXTENSION_ID=abcdefghijklmnopqrstuvwxyz123456");
+    console.error("  CHROME_PUBLISHER_ID=2eac7970-16dc-4341-9754-ea8698fc781d");
     console.error(
       "  CHROME_CLIENT_ID=your_oauth_client_id.apps.googleusercontent.com",
     );
@@ -59,6 +63,7 @@ async function publishChrome() {
     "chrome-webstore-upload",
     `--source=${chromeZip}`,
     `--extension-id=${extensionId}`,
+    `--publisher-id=${publisherId}`,
   ];
 
   const uploadCode = await runCommand(uploadCmd, rootDir, {
@@ -66,6 +71,7 @@ async function publishChrome() {
     CLIENT_SECRET: clientSecret,
     REFRESH_TOKEN: refreshToken,
     EXTENSION_ID: extensionId,
+    PUBLISHER_ID: publisherId,
   });
   if (uploadCode !== 0) {
     console.error(

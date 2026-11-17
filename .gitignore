@@ -14,3 +14,8 @@ skills/
 web-ext-artifacts/
 .web-extension-id
 .amo-upload-uuid
+client_secret*.json
+**/client_secret*.json
+*.p8
+**/*.p8
+

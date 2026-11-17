@@ -21,7 +21,8 @@
     "publish:firefox": "bun run scripts/publish-firefox.ts",
     "publish:chrome": "bun run scripts/publish-chrome.ts",
     "publish:safari": "bun run scripts/publish-safari.ts",
-    "publish:all": "bun run scripts/publish-all.ts"
+    "publish:all": "bun run scripts/publish-all.ts",
+    "status": "bun run scripts/status.ts"
   },
   "repository": {
     "type": "git",
