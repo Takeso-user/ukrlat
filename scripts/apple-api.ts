@@ -351,3 +351,62 @@ export async function submitForReview(
 
   return finalRes;
 }
+
+export interface ApplePrivacyUpdateResult {
+  id: string;
+  locale: string;
+  privacyPolicyUrl: string;
+}
+
+/**
+ * Updates the privacyPolicyUrl attribute across all appInfoLocalizations for the configured app.
+ */
+export async function updateApplePrivacyPolicyUrl(
+  config: AppleApiConfig,
+  privacyPolicyUrl: string,
+): Promise<ApplePrivacyUpdateResult[]> {
+  const infosRes = await fetchAppleApi(
+    `/apps/${config.appId}/appInfos`,
+    config,
+  );
+  const infos = (infosRes.data || []) as AppleResource[];
+  const results: ApplePrivacyUpdateResult[] = [];
+
+  for (const info of infos) {
+    const locsRes = await fetchAppleApi(
+      `/appInfos/${info.id}/appInfoLocalizations`,
+      config,
+    );
+    const locs = (locsRes.data || []) as AppleResource[];
+
+    for (const loc of locs) {
+      const updated = await fetchAppleApi(
+        `/appInfoLocalizations/${loc.id}`,
+        config,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            data: {
+              type: "appInfoLocalizations",
+              id: loc.id,
+              attributes: { privacyPolicyUrl },
+            },
+          }),
+        },
+      );
+
+      const updatedData = updated.data as AppleResource | undefined;
+      results.push({
+        id: loc.id,
+        locale: String(
+          updatedData?.attributes?.locale ?? loc.attributes?.locale ?? "",
+        ),
+        privacyPolicyUrl: String(
+          updatedData?.attributes?.privacyPolicyUrl ?? privacyPolicyUrl,
+        ),
+      });
+    }
+  }
+
+  return results;
+}
