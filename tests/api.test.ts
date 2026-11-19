@@ -26,6 +26,31 @@ describe("API and Static HTTP Endpoints", () => {
     const text = await res.text();
     expect(text).toContain("Транслітерація");
     expect(text).toContain("inputText");
+    expect(text).toContain('href="/privacy"');
+  });
+
+  test("GET /privacy serves dedicated Privacy Policy page", async () => {
+    const res = await fetch(`${baseUrl}/privacy`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/html");
+    const html = await res.text();
+    expect(html).toContain("Privacy Policy");
+    expect(html).toContain("Політика конфіденційності");
+    expect(html).toContain("takeso_kensai@hotmail.com");
+  });
+
+  test("GET /privacy-policy serves dedicated Privacy Policy page", async () => {
+    const res = await fetch(`${baseUrl}/privacy-policy`);
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("Privacy Policy");
+  });
+
+  test("GET /privacy.html serves static Privacy Policy page", async () => {
+    const res = await fetch(`${baseUrl}/privacy.html`);
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("Privacy Policy");
   });
 
   test("GET /health returns status ok", async () => {

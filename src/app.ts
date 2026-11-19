@@ -43,6 +43,11 @@ export function createApp(): Application {
     return res.sendFile(join(publicDir, "index.html"));
   });
 
+  // Serve dedicated Privacy Policy page
+  app.get(["/privacy", "/privacy-policy"], (_req: Request, res: Response) => {
+    return res.sendFile(join(publicDir, "privacy.html"));
+  });
+
   return app;
 }
 

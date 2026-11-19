@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — UkrLat (Українська латинка)</title>
+  <meta name="description" content="Official Privacy Policy for the UkrLat — Українська латинка browser extension and web application." />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+
+  <!-- OpenGraph / Social Meta -->
+  <meta property="og:title" content="Privacy Policy — UkrLat" />
+  <meta property="og:description" content="How the UkrLat browser extension and website handle data and protect user privacy." />
+  <meta property="og:url" content="https://ukrlat.uk/privacy" />
+  <meta property="og:type" content="website" />
+
+  <link rel="stylesheet" href="/styles.css" />
+  <style>
+    .privacy-wrapper {
+      max-width: 900px;
+      margin: 48px auto 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .privacy-hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .privacy-hero h1 {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #93c5fd 60%, var(--ua-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .privacy-subtitle {
+      color: var(--text-secondary);
+      font-size: 16px;
+      max-width: 680px;
+    }
+
+    .lang-nav {
+      display: inline-flex;
+      gap: 10px;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-card);
+      border-radius: 999px;
+      margin-top: 6px;
+    }
+
+    .lang-nav a {
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .lang-nav a:hover {
+      background: rgba(56, 189, 248, 0.24);
+      border-color: var(--ua-blue-light);
+    }
+
+    .privacy-card {
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px solid var(--border-card);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(16px);
+      scroll-margin-top: 100px;
+    }
+
+    .privacy-card-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .privacy-card-header h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .privacy-updated {
+      font-size: 13px;
+      color: var(--ua-gold);
+      font-weight: 600;
+      background: rgba(250, 204, 21, 0.1);
+      border: 1px solid rgba(250, 204, 21, 0.25);
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .privacy-section {
+      margin-bottom: 24px;
+    }
+
+    .privacy-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .privacy-section h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ua-blue-light);
+      margin-bottom: 10px;
+    }
+
+    .privacy-section p,
+    .privacy-section li {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .privacy-section p + p {
+      margin-top: 10px;
+    }
+
+    .privacy-section ul {
+      margin-top: 8px;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .privacy-section strong {
+      color: var(--text-primary);
+    }
+
+    .privacy-section a {
+      color: var(--ua-blue-light);
+      text-decoration: underline;
+    }
+
+    .privacy-section code {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--ua-gold-light);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 14px;
+      background: rgba(2, 6, 23, 0.45);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-card);
+    }
+
+    .policy-table th,
+    .policy-table td {
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-card);
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+
+    .policy-table th {
+      color: var(--text-primary);
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .policy-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    @media (max-width: 720px) {
+      .privacy-card {
+        padding: 24px 20px;
+      }
+
+      .privacy-hero h1 {
+        font-size: 28px;
+      }
+
+      .policy-table th,
+      .policy-table td {
+        padding: 10px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+      <a href="/" class="nav-brand">
+        <div class="nav-logo">U</div>
+        <div class="nav-title-group">
+          <h2>UkrLat <span class="badge-tag">Open Source</span></h2>
+          <p>Українська латинка</p>
+        </div>
+      </a>
+
+      <div class="nav-links">
+        <a href="/">← Повернутися на головну</a>
+        <a href="#en">English</a>
+        <a href="#uk">Українська</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="privacy-wrapper">
+      <header class="privacy-hero">
+        <h1>Privacy Policy &bull; Політика конфіденційності</h1>
+        <p class="privacy-subtitle">
+          UkrLat — Українська латинка browser extension (Chrome, Firefox, Safari) and web platform at
+          <a href="https://ukrlat.uk" style="color: var(--ua-blue-light);">https://ukrlat.uk</a>.
+        </p>
+        <div class="lang-nav" aria-label="Language navigation">
+          <a href="#en">English</a>
+          <a href="#uk">Українська</a>
+        </div>
+      </header>
+
+      <!-- English Section -->
+      <article class="privacy-card" id="en" lang="en">
+        <div class="privacy-card-header">
+          <h2>Privacy Policy (English)</h2>
+          <span class="privacy-updated">Effective Date: November 19, 2026</span>
+        </div>
+
+        <section class="privacy-section">
+          <h3>1. Overview &amp; Scope</h3>
+          <p>
+            This Privacy Policy describes how the <strong>UkrLat — Українська латинка</strong> browser extension
+            (for Google Chrome, Mozilla Firefox, Apple Safari, and Chromium-based browsers) and the official
+            web application at <strong>https://ukrlat.uk</strong> handle user data.
+          </p>
+          <p>
+            UkrLat is designed with privacy first: all Ukrainian-to-Latin transliteration and language detection
+            inside the browser extension execute <strong>100% locally on your device</strong>.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>2. No Collection of Personal or Sensitive User Data</h3>
+          <p>
+            The UkrLat browser extension does <strong>not</strong> collect, harvest, store remotely, transmit,
+            sell, or share any personally identifiable information, browsing history, visited URLs, webpage content,
+            keystrokes, analytics, or telemetry with the developer or any third party.
+          </p>
+          <ul>
+            <li>Page transliteration and language detection happen strictly in memory inside your browser tab.</li>
+            <li>No text from the pages you read or the forms you fill in ever leaves your device via the extension.</li>
+            <li>
+              Sensitive input fields — specifically <code>password</code>, <code>email</code>, <code>number</code>,
+              <code>date</code>, <code>time</code>, <code>file</code>, <code>color</code>, and <code>range</code> —
+              are explicitly excluded from live input transliteration.
+            </li>
+          </ul>
+        </section>
+
+        <section class="privacy-section">
+          <h3>3. Extension Permissions &amp; Local Storage</h3>
+          <p>
+            To perform its single purpose (transliterating Ukrainian Cyrillic text into UkrLat Latin script),
+            the extension requests only minimal permissions:
+          </p>
+          <table class="policy-table">
+            <thead>
+              <tr>
+                <th>Permission / API</th>
+                <th>Purpose &amp; Local-Only Scope</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>content_scripts</code> (<code>&lt;all_urls&gt;</code>)</td>
+                <td>
+                  Runs locally inside web pages to detect whether a page is predominantly in Ukrainian and
+                  transliterate DOM text nodes, user selections (<code>Alt+U</code>), or eligible text inputs
+                  on demand. Page text is never transmitted off the device.
+                </td>
+              </tr>
+              <tr>
+                <td><code>storage</code> (<code>chrome.storage.sync</code> / <code>chrome.storage.local</code>)</td>
+                <td>
+                  Stores only your extension preferences: <code>autoPageTransliterate</code>,
+                  <code>liveInputTransliterate</code>, and user-chosen per-domain overrides
+                  (<code>siteOverrides</code>). This data stays within your browser profile or browser sync
+                  account and cannot be accessed by the developer.
+                </td>
+              </tr>
+              <tr>
+                <td><code>contextMenus</code></td>
+                <td>
+                  Adds context-menu actions to transliterate selected text or toggle Latin script on the
+                  currently active tab when clicked by the user.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="privacy-section">
+          <h3>4. Website &amp; REST API (https://ukrlat.uk)</h3>
+          <p>
+            When you visit the web application at <code>https://ukrlat.uk</code> or send a request to
+            <code>POST /api/v1/transliterate</code>, any submitted text is processed purely in memory in order to
+            compute and return the transliterated result. Submitted text is never logged to disk, retained, profiled,
+            or shared with third parties.
+          </p>
+          <p>
+            The website uses browser <code>localStorage</code> solely to remember your chosen display script
+            (<code>ukrlat_page_script</code>: Cyrillic or Latin) and does not use advertising cookies or third-party
+            tracking scripts.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>5. Third-Party Sharing &amp; Chrome Web Store Limited Use Disclosure</h3>
+          <p>
+            We do not sell, rent, trade, or transfer any user data to third parties, data brokers, or advertising
+            networks. The use of information received from Google APIs and browser extension APIs adheres strictly
+            to the <strong>Chrome Web Store User Data Policy</strong>, including the <strong>Limited Use
+            requirements</strong>.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>6. User Control &amp; Data Deletion</h3>
+          <p>
+            You remain in full control of your preferences at all times. You can disable automatic transliteration
+            or clear per-site settings from the extension popup at any time. Uninstalling the extension immediately
+            stops all local processing and removes all stored extension preferences from your browser.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>7. Contact Information &amp; Policy Updates</h3>
+          <p>
+            If you have any questions about this Privacy Policy or the extension's privacy practices, please contact
+            the developer:
+          </p>
+          <ul>
+            <li><strong>Developer:</strong> Serhii Maltsev</li>
+            <li><strong>Email:</strong> <a href="mailto:takeso_kensai@hotmail.com">takeso_kensai@hotmail.com</a></li>
+            <li><strong>Source Code &amp; Issues:</strong> <a href="https://github.com/Takeso-user/ukrlat/issues" target="_blank" rel="noopener noreferrer">github.com/Takeso-user/ukrlat/issues</a></li>
+          </ul>
+        </section>
+      </article>
+
+      <!-- Ukrainian Section -->
+      <article class="privacy-card" id="uk" lang="uk">
+        <div class="privacy-card-header">
+          <h2>Політика конфіденційності (Українська)</h2>
+          <span class="privacy-updated">Дата набрання чинності: 19 листопада 2026 р.</span>
+        </div>
+
+        <section class="privacy-section">
+          <h3>1. Загальні положення</h3>
+          <p>
+            Ця Політика конфіденційності пояснює, як браузерне розширення <strong>UkrLat — Українська латинка</strong>
+            (для Google Chrome, Mozilla Firefox, Apple Safari та браузерів на базі Chromium) і вебплатформа
+            <strong>https://ukrlat.uk</strong> обробляють дані користувачів.
+          </p>
+          <p>
+            UkrLat створено з фокусом на повну приватність: визначення мови сторінки та транслітерація української
+            кирилиці в латинку в розширенні виконуються <strong>виключно локально у вашому браузері</strong>.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>2. Відсутність збору персональних чи конфіденційних даних</h3>
+          <p>
+            Розширення UkrLat <strong>не збирає, не зберігає на сторонніх серверах, не передає, не продає та не
+            розкриває третім особам</strong> жодних персональних даних, історії відвідувань, URL-адрес, вмісту
+            вебсторінок, натискань клавіш або аналітики.
+          </p>
+          <ul>
+            <li>Аналіз тексту сторінок і транслітерація відбуваються виключно в оперативній пам'яті вашої вкладки браузера.</li>
+            <li>Жоден текст зі сторінок або форм не передається на зовнішні сервери через розширення.</li>
+            <li>
+              Чутливі поля вводу — зокрема <code>password</code>, <code>email</code>, <code>number</code>,
+              <code>date</code>, <code>time</code>, <code>file</code>, <code>color</code> та <code>range</code> —
+              гарантовано виключені з автоматичної транслітерації при введенні.
+            </li>
+          </ul>
+        </section>
+
+        <section class="privacy-section">
+          <h3>3. Дозволи розширення та локальне сховище</h3>
+          <p>
+            Для виконання єдиного призначення (транслітерації українського тексту латинкою UkrLat) розширення
+            використовує лише мінімально необхідні дозволи:
+          </p>
+          <table class="policy-table">
+            <thead>
+              <tr>
+                <th>Дозвіл / API</th>
+                <th>Призначення та локальна робота</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>content_scripts</code> (<code>&lt;all_urls&gt;</code>)</td>
+                <td>
+                  Працює локально на вебсторінках, щоб виявляти переважання української мови та транслітерувати
+                  текстові вузли DOM, виділений текст (<code>Alt+U</code>) або звичайні текстові поля за бажанням
+                  користувача. Вміст сторінок нікуди не надсилається.
+                </td>
+              </tr>
+              <tr>
+                <td><code>storage</code> (<code>chrome.storage.sync</code> / <code>chrome.storage.local</code>)</td>
+                <td>
+                  Зберігає лише ваші власні налаштування: <code>autoPageTransliterate</code>,
+                  <code>liveInputTransliterate</code> та список винятків для окремих доменів
+                  (<code>siteOverrides</code>). Ці налаштування зберігаються виключно у профілі вашого браузера
+                  й недоступні розробнику.
+                </td>
+              </tr>
+              <tr>
+                <td><code>contextMenus</code></td>
+                <td>
+                  Додає пункти контекстного меню правої кнопки миші для транслітерації виділеного фрагмента
+                  або перемикання режиму на поточній сторінці.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="privacy-section">
+          <h3>4. Вебсайт і REST API (https://ukrlat.uk)</h3>
+          <p>
+            Під час використання онлайн-конвертера на сайті <code>https://ukrlat.uk</code> або звернення до
+            ендпоінту <code>POST /api/v1/transliterate</code> надісланий текст обробляється в оперативній пам'яті
+            виключно для повернення результату транслітерації та не записується у журнали, бази даних чи треті сервіси.
+          </p>
+          <p>
+            Вебсайт використовує <code>localStorage</code> лише для запам'ятовування вибраної графіки інтерфейсу
+            (<code>ukrlat_page_script</code>: кирилиця або латинка) і не використовує рекламних cookie чи сторонніх
+            лічильників відстеження.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>5. Передача даних третім особам і вимоги Chrome Web Store (Limited Use)</h3>
+          <p>
+            Ми не продаємо, не передаємо й не розкриваємо дані користувачів третім особам чи рекламним мережам.
+            Обробка будь-яких даних у межах API браузера повністю відповідає правилам
+            <strong>Chrome Web Store User Data Policy</strong>, включно з вимогами обмеженого використання
+            (<strong>Limited Use requirements</strong>).
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>6. Керування даними та видалення</h3>
+          <p>
+            Ви можете будь-якої миті змінити налаштування автоматичної транслітерації або скинути параметри
+            для конкретних сайтів у меню розширення. Видалення розширення з браузера негайно припиняє всю локальну
+            обробку та видаляє локально збережені налаштування.
+          </p>
+        </section>
+
+        <section class="privacy-section">
+          <h3>7. Контактна інформація</h3>
+          <p>
+            Якщо у вас є запитання щодо цієї Політики конфіденційності або роботи розширення, звертайтеся до розробника:
+          </p>
+          <ul>
+            <li><strong>Розробник:</strong> Serhii Maltsev</li>
+            <li><strong>Email:</strong> <a href="mailto:takeso_kensai@hotmail.com">takeso_kensai@hotmail.com</a></li>
+            <li><strong>Вихідний код і підтримка:</strong> <a href="https://github.com/Takeso-user/ukrlat/issues" target="_blank" rel="noopener noreferrer">github.com/Takeso-user/ukrlat/issues</a></li>
+          </ul>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="nav-logo" style="width: 36px; height: 36px; font-size: 18px;">U</div>
+          <div>
+            <div style="font-weight: 800; font-size: 16px; color: #fff;">UkrLat Project</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Відкрита українська латинка</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+          <a href="/" style="color: var(--text-secondary); text-decoration: none;">Головна</a>
+          <a href="/privacy" style="color: var(--text-secondary); text-decoration: none;">Політика конфіденційності</a>
+          <a href="https://github.com/Takeso-user/ukrlat" target="_blank" rel="noopener noreferrer" style="color: var(--text-secondary); text-decoration: none;">GitHub Репозиторій</a>
+        </div>
+      </div>
+
+      <div class="footer-copy">
+        © 2026 Serhii Maltsev. Проект розповсюджується під ліцензією Apache 2.0. Розгорнуто на Railway.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

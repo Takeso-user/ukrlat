@@ -1,6 +1,6 @@
 {
   "name": "ukrlat",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Latin alphabet for Ukrainian transliteration",
   "type": "module",
   "main": "src/index.ts",

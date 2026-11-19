@@ -352,9 +352,21 @@ textarea:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
   font-size: 11px;
   color: var(--text-muted);
   padding-top: 2px;
+}
+
+.footer-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-sep {
+  color: var(--border);
 }
 
 .footer code {
