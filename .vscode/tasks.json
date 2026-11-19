@@ -129,6 +129,31 @@
         "focus": true
       },
       "detail": "Проверить статус приложения в App Store Connect через REST API"
+    },
+    {
+      "label": "⌨️ Установить раскладку UkrLat для macOS",
+      "type": "shell",
+      "command": "bun run keyboard:install",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true
+      },
+      "detail": "Скопировать UkrLat.bundle в ~/Library/Keyboard Layouts для добавления в Системные настройки (Українська)"
+    },
+    {
+      "label": "🛠️ Собрать бандл раскладки UkrLat (macOS)",
+      "type": "shell",
+      "command": "bun run keyboard:build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "detail": "Сгенерировать раскладку keyboard/UkrLat.bundle (.keylayout, Info.plist, .icns)"
     }
   ]
 }

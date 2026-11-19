@@ -84,6 +84,22 @@
       "program": "${workspaceFolder}/scripts/publish-safari.ts",
       "noDebug": true,
       "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "⌨️ Установить раскладку UkrLat для macOS",
+      "program": "${workspaceFolder}/keyboard/install.ts",
+      "noDebug": true,
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "🛠️ Собрать бандл раскладки UkrLat (macOS)",
+      "program": "${workspaceFolder}/keyboard/build.ts",
+      "noDebug": true,
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

@@ -18,6 +18,7 @@ const proc = spawn(
     "bun",
     "test",
     "tests/transliterate.test.ts",
+    "tests/keyboard.test.ts",
     "extension/tests/extension.test.ts",
     "extension/tests/lang-detect.test.ts",
   ],
