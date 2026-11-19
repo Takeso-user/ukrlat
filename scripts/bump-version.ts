@@ -29,6 +29,15 @@ const xcodeProjPath = join(
   "UkrLat.xcodeproj",
   "project.pbxproj",
 );
+const xcodeXcprojPath = join(
+  rootDir,
+  "extension",
+  "dist",
+  "safari-xcode",
+  "UkrLat",
+  "UkrLat.xcodeproj",
+  "project.xcproj",
+);
 
 function updateJsonFile(
   filePath: string,
@@ -114,9 +123,10 @@ export async function detectHighestVersion(): Promise<{
         .update(`${header}.${payload}`)
         .digest("base64url");
 
+      const jwtToken = `${header}.${payload}.${sig}`;
       const res = await fetch(
         "https://addons.mozilla.org/api/v5/addons/addon/ukrlat@takeso.com/",
-        { headers: { Authorization: `JWT ${header}.${payload}.${sig}` } },
+        { headers: { Authorization: `JWT ${jwtToken}` } },
       );
       const data = (await res.json()) as {
         current_version?: { version?: string };
@@ -124,6 +134,25 @@ export async function detectHighestVersion(): Promise<{
       const v = data.current_version?.version;
       if (v && semver.valid(v)) {
         versions.firefox = v;
+      }
+
+      // Also check latest submitted version (including unapproved in review queue)
+      const versionsRes = await fetch(
+        "https://addons.mozilla.org/api/v5/addons/addon/ukrlat@takeso.com/versions/?filter=all_with_unlisted&page_size=1",
+        { headers: { Authorization: `JWT ${jwtToken}` } },
+      );
+      if (versionsRes.ok) {
+        const versionsData = (await versionsRes.json()) as {
+          results?: Array<{ version?: string }>;
+        };
+        const latestSubmitted = versionsData.results?.[0]?.version;
+        if (
+          latestSubmitted &&
+          semver.valid(latestSubmitted) &&
+          (!versions.firefox || semver.gt(latestSubmitted, versions.firefox))
+        ) {
+          versions.firefox = latestSubmitted;
+        }
       }
     }
   } catch {
@@ -229,7 +258,32 @@ export async function bumpVersion(
   });
   console.log("  ✓ Обновлен extension/manifests/manifest.chrome.json");
 
-  // 5. Safari Xcode project if already generated
+  // 5. Safari Xcode project if already generated (supports both project.xcproj and project.pbxproj)
+  if (existsSync(xcodeXcprojPath)) {
+    let xcproj = readFileSync(xcodeXcprojPath, "utf-8");
+    xcproj = xcproj.replace(
+      /"MARKETING_VERSION":\s*"[^"]+"/g,
+      `"MARKETING_VERSION": "${nextVersion}"`,
+    );
+    const matchBuild = xcproj.match(/"CURRENT_PROJECT_VERSION":\s*"(\d+)"/);
+    if (matchBuild?.[1]) {
+      const currentBuild = Number.parseInt(matchBuild[1], 10) || 1;
+      const nextBuild = currentBuild + 1;
+      xcproj = xcproj.replace(
+        /"CURRENT_PROJECT_VERSION":\s*"\d+"/g,
+        `"CURRENT_PROJECT_VERSION": "${nextBuild}"`,
+      );
+      console.log(
+        `  ✓ Обновлен Xcode (project.xcproj): маркетинговая версия ${nextVersion}, билд #${nextBuild}`,
+      );
+    } else {
+      console.log(
+        `  ✓ Обновлен Xcode (project.xcproj): маркетинговая версия ${nextVersion}`,
+      );
+    }
+    writeFileSync(xcodeXcprojPath, xcproj, "utf-8");
+  }
+
   if (existsSync(xcodeProjPath)) {
     let pbx = readFileSync(xcodeProjPath, "utf-8");
     pbx = pbx.replace(
@@ -245,10 +299,12 @@ export async function bumpVersion(
         `CURRENT_PROJECT_VERSION = ${nextBuild};`,
       );
       console.log(
-        `  ✓ Обновлен Xcode: маркетинговая версия ${nextVersion}, билд #${nextBuild}`,
+        `  ✓ Обновлен Xcode (project.pbxproj): маркетинговая версия ${nextVersion}, билд #${nextBuild}`,
       );
     } else {
-      console.log(`  ✓ Обновлен Xcode: маркетинговая версия ${nextVersion}`);
+      console.log(
+        `  ✓ Обновлен Xcode (project.pbxproj): маркетинговая версия ${nextVersion}`,
+      );
     }
     writeFileSync(xcodeProjPath, pbx, "utf-8");
   }

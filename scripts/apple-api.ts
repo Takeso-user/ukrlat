@@ -7,6 +7,7 @@ export interface AppleApiConfig {
   keyId: string;
   issuerId: string;
   privateKey: string;
+  privateKeyPath?: string;
 }
 
 export interface AppleResource {
@@ -21,20 +22,27 @@ export function getAppleApiConfig(): AppleApiConfig | null {
   const keyId = process.env.APPLE_KEY_ID?.trim();
   const issuerId = process.env.APPLE_ISSUER_ID?.trim();
   let privateKey = process.env.APPLE_PRIVATE_KEY?.trim();
-  const privateKeyPath = process.env.APPLE_PRIVATE_KEY_PATH?.trim();
+  const envKeyPath = process.env.APPLE_PRIVATE_KEY_PATH?.trim();
+  let resolvedKeyPath: string | undefined;
 
-  if (!privateKey && privateKeyPath) {
-    const fullPath = resolve(process.cwd(), privateKeyPath);
+  if (!privateKey && envKeyPath) {
+    const fullPath = resolve(process.cwd(), envKeyPath);
     if (existsSync(fullPath)) {
       privateKey = readFileSync(fullPath, "utf-8");
+      resolvedKeyPath = fullPath;
     }
   }
 
   // Also check if AuthKey_${keyId}.p8 exists in root or scripts
-  if (!privateKey && keyId) {
+  if (keyId) {
     const candidateRoot = resolve(process.cwd(), `AuthKey_${keyId}.p8`);
     if (existsSync(candidateRoot)) {
-      privateKey = readFileSync(candidateRoot, "utf-8");
+      if (!privateKey) {
+        privateKey = readFileSync(candidateRoot, "utf-8");
+      }
+      if (!resolvedKeyPath) {
+        resolvedKeyPath = candidateRoot;
+      }
     }
   }
 
@@ -42,7 +50,13 @@ export function getAppleApiConfig(): AppleApiConfig | null {
     return null;
   }
 
-  return { appId, keyId, issuerId, privateKey };
+  return {
+    appId,
+    keyId,
+    issuerId,
+    privateKey,
+    privateKeyPath: resolvedKeyPath,
+  };
 }
 
 export function generateAppleToken(config: AppleApiConfig): string {
@@ -77,60 +91,204 @@ export async function fetchAppleApi(
   endpoint: string,
   config: AppleApiConfig,
   options: RequestInit = {},
+  retries = 2,
 ): Promise<Record<string, unknown>> {
-  const token = generateAppleToken(config);
   const url = endpoint.startsWith("http")
     ? endpoint
     : `https://api.appstoreconnect.apple.com/v1${endpoint}`;
 
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const token = generateAppleToken(config);
+    const res = await fetch(url, {
+      ...options,
+      signal: AbortSignal.timeout(10000),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
 
-  const json = (await res.json().catch(() => ({}))) as {
-    errors?: Array<{ title?: string; detail?: string }>;
-    data?: unknown;
-  };
+    const json = (await res.json().catch(() => ({}))) as {
+      errors?: Array<{ title?: string; detail?: string }>;
+      data?: unknown;
+    };
 
-  if (!res.ok) {
-    const errorMsg =
-      json.errors
-        ?.map((e) => `${e.title || "Error"}: ${e.detail || ""}`)
-        .join("; ") || `HTTP ${res.status} ${res.statusText}`;
-    throw new Error(`Apple API error: ${errorMsg}`);
+    if (!res.ok) {
+      if (res.status >= 500 && attempt < retries) {
+        await new Promise((r) => setTimeout(r, 1500 * attempt));
+        continue;
+      }
+      const errorMsg =
+        json.errors
+          ?.map((e) => `${e.title || "Error"}: ${e.detail || ""}`)
+          .join("; ") || `HTTP ${res.status} ${res.statusText}`;
+      throw new Error(`Apple API error: ${errorMsg}`);
+    }
+
+    return json as Record<string, unknown>;
   }
 
-  return json as Record<string, unknown>;
+  throw new Error("Apple API error: Max retries exceeded");
 }
 
 export async function getAppleStatus(config: AppleApiConfig) {
+  let versions: AppleResource[] = [];
+  let builds: AppleResource[] = [];
+  let submissions: AppleResource[] = [];
+
   // 1. App store versions for macOS
-  const versionsData = await fetchAppleApi(
-    `/apps/${config.appId}/appStoreVersions?filter[platform]=MAC_OS`,
-    config,
-  );
-  const versions = (versionsData.data || []) as AppleResource[];
+  try {
+    const versionsData = await fetchAppleApi(
+      `/apps/${config.appId}/appStoreVersions`,
+      config,
+    );
+    versions = (versionsData.data || []) as AppleResource[];
+  } catch (err) {
+    console.warn("  ⚠️ Versions query warning:", (err as Error).message);
+  }
 
   // 2. Recent builds
-  const buildsData = await fetchAppleApi(
-    `/apps/${config.appId}/builds?limit=5`,
-    config,
-  );
-  const builds = (buildsData.data || []) as AppleResource[];
+  try {
+    const buildsData = await fetchAppleApi(
+      `/builds?filter[app]=${config.appId}&limit=5`,
+      config,
+    );
+    builds = (buildsData.data || []) as AppleResource[];
+  } catch (err) {
+    console.warn("  ⚠️ Builds query warning:", (err as Error).message);
+  }
 
   // 3. Review submissions
-  const submissionsData = await fetchAppleApi(
-    `/reviewSubmissions?filter[app]=${config.appId}&limit=3`,
-    config,
-  );
-  const submissions = (submissionsData.data || []) as AppleResource[];
+  try {
+    const submissionsData = await fetchAppleApi(
+      `/apps/${config.appId}/reviewSubmissions`,
+      config,
+    );
+    submissions = (submissionsData.data || []) as AppleResource[];
+  } catch {
+    // Non-blocking: version.attributes.appStoreState already provides the review state
+  }
 
   return { versions, builds, submissions };
+}
+
+export async function cancelAppleReviewSubmission(
+  config: AppleApiConfig,
+  submissionId?: string,
+  versionId?: string,
+) {
+  if (submissionId) {
+    try {
+      const res = await fetchAppleApi(
+        `/reviewSubmissions/${submissionId}`,
+        config,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            data: {
+              id: submissionId,
+              type: "reviewSubmissions",
+              attributes: { canceled: true },
+            },
+          }),
+        },
+      );
+      return res;
+    } catch (err) {
+      console.warn("  ⚠️ Cancel reviewSubmission note:", (err as Error).message);
+    }
+  }
+  if (versionId) {
+    try {
+      return await fetchAppleApi(
+        `/appStoreVersionSubmissions/${versionId}`,
+        config,
+        {
+          method: "DELETE",
+        },
+      );
+    } catch (err) {
+      console.warn(
+        "  ⚠️ Delete appStoreVersionSubmission note:",
+        (err as Error).message,
+      );
+    }
+  }
+  return null;
+}
+
+export async function updateAppleVersionString(
+  config: AppleApiConfig,
+  versionId: string,
+  versionString: string,
+) {
+  return await fetchAppleApi(`/appStoreVersions/${versionId}`, config, {
+    method: "PATCH",
+    body: JSON.stringify({
+      data: {
+        id: versionId,
+        type: "appStoreVersions",
+        attributes: { versionString },
+      },
+    }),
+  });
+}
+
+export async function attachBuildToVersion(
+  config: AppleApiConfig,
+  versionId: string,
+  buildId: string,
+) {
+  return await fetchAppleApi(
+    `/appStoreVersions/${versionId}/relationships/build`,
+    config,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        data: {
+          id: buildId,
+          type: "builds",
+        },
+      }),
+    },
+  );
+}
+
+export async function waitForValidBuild(
+  config: AppleApiConfig,
+  expectedBuildNum: string,
+  maxAttempts = 20,
+  intervalMs = 15000,
+): Promise<AppleResource | null> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const { builds } = await getAppleStatus(config);
+    const matching = builds.find(
+      (b) => String(b.attributes?.version) === expectedBuildNum,
+    );
+    if (matching) {
+      const state = String(matching.attributes?.processingState || "");
+      console.log(
+        `  ⏳ Проверка сборки #${expectedBuildNum} в App Store Connect [${attempt}/${maxAttempts}]: статус = ${state}`,
+      );
+      if (state === "VALID") {
+        return matching;
+      }
+      if (state === "FAILED" || state === "INVALID") {
+        throw new Error(
+          `Сборка #${expectedBuildNum} отклонена Apple со статусом ${state}`,
+        );
+      }
+    } else {
+      console.log(
+        `  ⏳ Ожидание появления сборки #${expectedBuildNum} в App Store Connect [${attempt}/${maxAttempts}]...`,
+      );
+    }
+    if (attempt < maxAttempts) {
+      await new Promise((r) => setTimeout(r, intervalMs));
+    }
+  }
+  return null;
 }
 
 export async function submitForReview(

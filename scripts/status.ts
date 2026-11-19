@@ -143,6 +143,24 @@ async function checkFirefoxStatus() {
     const version = data.current_version?.version || "N/A";
     const status = data.status || "Unknown";
 
+    let latestSubmitted = version;
+    const versionsRes = await fetch(
+      "https://addons.mozilla.org/api/v5/addons/addon/ukrlat@takeso.com/versions/?filter=all_with_unlisted&page_size=1",
+      {
+        headers: {
+          Authorization: `JWT ${jwt}`,
+        },
+      },
+    );
+    if (versionsRes.ok) {
+      const versionsData = (await versionsRes.json().catch(() => ({}))) as {
+        results?: Array<{ version?: string }>;
+      };
+      if (versionsData.results?.[0]?.version) {
+        latestSubmitted = versionsData.results[0].version;
+      }
+    }
+
     let readableStatus = status;
     if (status === "nominated") {
       readableStatus = "nominated (⏳ В очереди на проверку / In Review Queue)";
@@ -155,7 +173,8 @@ async function checkFirefoxStatus() {
     console.log(
       `  ✓ Name:             ${data.name?.uk || data.name?.["en-US"] || "UkrLat"}`,
     );
-    console.log(`  ✓ Version:          ${version}`);
+    console.log(`  ✓ Latest Submitted: ${latestSubmitted}`);
+    console.log(`  ✓ Live/Approved:    ${version}`);
     console.log(`  ✓ Status:           ${readableStatus}`);
     console.log(`  ✓ Last Updated:     ${data.last_updated}`);
   } catch (err: unknown) {

@@ -1,4 +1,5 @@
 import { join } from "node:path";
+import getClient from "chrome-webstore-upload";
 
 const rootDir = join(import.meta.dir, "..");
 const extDir = join(rootDir, "extension");
@@ -33,6 +34,56 @@ async function runCommand(
     stderr: "inherit",
   });
   return await proc.exited;
+}
+
+async function cancelPendingReviewIfNeeded(
+  extensionId: string,
+  publisherId: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+): Promise<void> {
+  try {
+    const client = getClient({
+      extensionId,
+      publisherId,
+      clientId,
+      clientSecret,
+      refreshToken,
+    });
+    const token = await client.fetchToken();
+
+    console.log(
+      "  ℹ️ Проверяем наличие активной заявки на модерации в Chrome Web Store...",
+    );
+    const cancelRes = await fetch(
+      `https://chromewebstore.googleapis.com/v2/publishers/${publisherId}/items/${extensionId}:cancelSubmission`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      },
+    );
+    if (cancelRes.ok) {
+      console.log(
+        "  ✓ Предыдущая заявка на ревью успешно отменена, ожидаем 3 сек для снятия блокировки...",
+      );
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    } else {
+      const errText = await cancelRes.text().catch(() => "");
+      console.log(
+        `  ℹ️ Ответ cancelSubmission (HTTP ${cancelRes.status}): ${errText.slice(0, 200)}`,
+      );
+    }
+  } catch (err) {
+    console.warn(
+      "  ⚠️ Предупреждение при проверке ревью:",
+      (err as Error).message,
+    );
+  }
 }
 
 async function publishChrome() {
@@ -72,8 +123,16 @@ async function publishChrome() {
     process.exit(1);
   }
 
-  // 2. Upload and publish to Chrome Web Store
+  // 2. Cancel pending review if any, then upload and publish to Chrome Web Store
   console.log("\n[2/2] Uploading and publishing to Chrome Web Store...");
+  await cancelPendingReviewIfNeeded(
+    extensionId,
+    publisherId,
+    clientId,
+    clientSecret,
+    refreshToken,
+  );
+
   const uploadCmd = [
     "bunx",
     "chrome-webstore-upload",
@@ -92,6 +151,9 @@ async function publishChrome() {
   if (uploadCode !== 0) {
     console.error(
       `❌ Chrome Web Store upload failed with exit code ${uploadCode}`,
+    );
+    console.warn(
+      `💡 Подсказка: Если в Chrome Web Store предыдущая версия уже проверяется модератором (In Review), Google блокирует загрузку новых архивов. Дождитесь завершения проверки или нажмите «Cancel review» в панели: https://chrome.google.com/webstore/devconsole/${publisherId}/${extensionId}/edit`,
     );
     process.exit(uploadCode);
   }

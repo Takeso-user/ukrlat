@@ -1,4 +1,5 @@
-import { bumpVersion } from "./bump-version";
+import semver from "semver";
+import { bumpVersion, detectHighestVersion } from "./bump-version";
 
 function getCleanEnv(): Record<string, string | undefined> {
   const env: Record<string, string | undefined> = { ...process.env };
@@ -41,8 +42,37 @@ async function publishAll() {
     "=================================================================\n",
   );
 
-  // 1. Проверяем опубликованные версии во всех магазинах и инкрементируем SemVer
-  const newVersion = await bumpVersion(bumpType, { checkStores: true });
+  // 1. Проверяем актуальные версии во всех магазинах
+  const { highestVersion, versions } = await detectHighestVersion();
+  const knownStoreVersions = [
+    versions.chrome,
+    versions.firefox,
+    versions.apple,
+  ].filter((v): v is string => Boolean(v && semver.valid(v)));
+
+  if (knownStoreVersions.length === 0) {
+    console.error(
+      "\n❌ Нет сетевого подключения к API магазинов. Прерываем деплой, чтобы не увеличивать версию вслепую.",
+    );
+    process.exit(1);
+  }
+
+  const hasLaggingStores =
+    knownStoreVersions.length > 0 &&
+    knownStoreVersions.some((v) => semver.lt(v, highestVersion));
+
+  let newVersion: string;
+  if (hasLaggingStores) {
+    console.log(
+      `\n🔄 Обнаружена рассинхронизация версий между магазинами (максимальная версия: ${highestVersion}).`,
+    );
+    console.log(
+      `   Выравниваем отстающие магазины до единой версии ${highestVersion} без лишнего инкремента...`,
+    );
+    newVersion = await bumpVersion(highestVersion, { checkStores: false });
+  } else {
+    newVersion = await bumpVersion(bumpType, { checkStores: false });
+  }
 
   console.log(
     `📦 Начинаем автоматическую сборку и выгрузку версии ${newVersion}...\n`,
@@ -50,15 +80,48 @@ async function publishAll() {
 
   // 2. Firefox AMO
   console.log("▶ [1/3] Выгрузка в Mozilla Add-ons (Firefox AMO)...");
-  const ffResult = await runScript("scripts/publish-firefox.ts");
+  let ffResult = 0;
+  if (
+    versions.firefox &&
+    semver.valid(versions.firefox) &&
+    semver.gte(versions.firefox, newVersion)
+  ) {
+    console.log(
+      `  ⏭️ В Mozilla AMO уже загружена актуальная версия ${versions.firefox} — повторная выгрузка не требуется.`,
+    );
+  } else {
+    ffResult = await runScript("scripts/publish-firefox.ts");
+  }
 
   // 3. Chrome Web Store
   console.log("\n▶ [2/3] Выгрузка в Chrome Web Store...");
-  const chromeResult = await runScript("scripts/publish-chrome.ts");
+  let chromeResult = 0;
+  if (
+    versions.chrome &&
+    semver.valid(versions.chrome) &&
+    semver.gte(versions.chrome, newVersion)
+  ) {
+    console.log(
+      `  ⏭️ В Chrome Web Store уже загружена актуальная версия ${versions.chrome} — повторная выгрузка не требуется.`,
+    );
+  } else {
+    chromeResult = await runScript("scripts/publish-chrome.ts");
+  }
 
   // 4. Safari Mac App Store
   console.log("\n▶ [3/3] Выгрузка в Apple App Store Connect (Safari macOS)...");
-  const safariResult = await runScript("scripts/publish-safari.ts");
+  let safariResult = 0;
+  if (
+    versions.apple &&
+    semver.valid(versions.apple) &&
+    semver.gte(versions.apple, newVersion)
+  ) {
+    console.log(
+      `  ⏭️ В Apple App Store уже загружена актуальная версия ${versions.apple} — повторная выгрузка не требуется.`,
+    );
+  } else {
+    safariResult = await runScript("scripts/publish-safari.ts");
+  }
 
   console.log(
     "\n=================================================================",
@@ -68,13 +131,13 @@ async function publishAll() {
     "=================================================================",
   );
   console.log(
-    `  🦊 Firefox AMO:      ${ffResult === 0 ? "✅ Успешно выгружено" : "❌ Ошибка / Пропущено"}`,
+    `  🦊 Firefox AMO:      ${ffResult === 0 ? `✅ Актуально (${newVersion})` : "❌ Ошибка / Пропущено"}`,
   );
   console.log(
-    `  🌐 Chrome Web Store: ${chromeResult === 0 ? "✅ Успешно выгружено" : "❌ Ошибка / Пропущено"}`,
+    `  🌐 Chrome Web Store: ${chromeResult === 0 ? `✅ Актуально (${newVersion})` : "❌ Ошибка / Пропущено"}`,
   );
   console.log(
-    `  🍎 Safari App Store: ${safariResult === 0 ? "✅ Успешно выгружено" : "❌ Ошибка / Пропущено"}`,
+    `  🍎 Safari App Store: ${safariResult === 0 ? `✅ Актуально (${newVersion})` : "❌ Ошибка / Пропущено"}`,
   );
   console.log(
     "=================================================================\n",
