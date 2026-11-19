@@ -178,10 +178,11 @@ function insertSample(type) {
 Той, хоч і труду мав досить,
 Дивнії перли виносить.`;
   } else if (type === "phrases") {
-    inputEl.value = `Доброго дня! Як ваші справи?
-Вітаємо у світі сучасної української латинки.
-Київ — серце вільної та незалежної України.
-Дякую за підтримку нашого проекту!`;
+    inputEl.value = `— Добрий день! Підкажіть, будь ласка, скільки коштує цей светр?
+— Добрий день! Він коштує 450 гривень.
+— Чи є такий самий, але синього кольору?
+— Так, подивіться на сусідній полиці.
+— Дякую, зараз подивлюся.`;
   }
 
   transliterateText();
@@ -492,10 +493,10 @@ function isExcludedElement(el) {
     return true;
   }
   if (
-    el.id === "inputText" || 
-    el.id === "apiTestInput" || 
+    el.id === "inputText" ||
+    el.id === "apiTestInput" ||
     el.id === "apiTestOutput" ||
-    el.id === "scriptBtnCyr" || 
+    el.id === "scriptBtnCyr" ||
     el.id === "scriptBtnLat"
   ) {
     return true;
@@ -557,7 +558,7 @@ function setPageScript(script) {
   currentPageScript = script;
   try {
     localStorage.setItem("ukrlat_page_script", script);
-  } catch (e) {}
+  } catch (e) { }
 
   const cyrBtn = document.getElementById("scriptBtnCyr");
   const latBtn = document.getElementById("scriptBtnLat");
@@ -641,5 +642,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (saved === "latin") {
       setPageScript("latin");
     }
-  } catch (e) {}
+  } catch (e) { }
 });
