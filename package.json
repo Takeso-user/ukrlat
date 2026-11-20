@@ -18,6 +18,7 @@
     "build:extension": "cd extension && bun run build",
     "keyboard:build": "bun run keyboard/build.ts",
     "keyboard:install": "bun run keyboard/install.ts",
+    "keyboard:ios:sync": "bun run keyboard/sync-ios.ts",
     "version:patch": "bun run scripts/bump-version.ts patch",
     "version:minor": "bun run scripts/bump-version.ts minor",
     "version:major": "bun run scripts/bump-version.ts major",

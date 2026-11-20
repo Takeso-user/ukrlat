@@ -131,6 +131,22 @@ async function buildTarget(target: BrowserTarget) {
         `  ✓ Preserving existing Safari Xcode project at: ${existingProj}`,
       );
     }
+
+    // Sync iOS Keyboard Extension (UkrLat Keyboard (iOS)) into the Safari Xcode project
+    const syncScript = join(rootDir, "..", "keyboard", "sync-ios.ts");
+    if (existsSync(syncScript) && existsSync(existingProj)) {
+      const syncProc = Bun.spawn(["bun", "run", syncScript], {
+        cwd: join(rootDir, ".."),
+        stdout: "inherit",
+        stderr: "inherit",
+      });
+      const syncExit = await syncProc.exited;
+      if (syncExit !== 0) {
+        console.warn(
+          `  ⚠️ iOS Keyboard Extension sync exited with code ${syncExit}`,
+        );
+      }
+    }
   }
 }
 
